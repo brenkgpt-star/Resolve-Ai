@@ -5,10 +5,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Resolve Aí — Diagnóstico Rápido e Marketplace de Ferramentas</title>
     <meta name="description" content="Descubra o que quebrou na sua casa em 30 segundos e encontre as ferramentas e peças exatas no nosso marketplace para resolver sozinho sem pagar visita técnica." />
+    <!-- Favicon & PWA -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="theme-color" content="#1C1917" />
+    
+    <!-- Open Graph / Social Sharing -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Resolve Aí — Diagnóstico Rápido e Marketplace de Ferramentas" />
+    <meta property="og:description" content="Descubra o que quebrou na sua casa em 30 segundos e compre o kit exato de ferramentas e peças para resolver sem visita técnica." />
+    <meta property="og:locale" content="pt_BR" />
+    <meta name="twitter:card" content="summary_large_image" />
+
     <!-- Google Fonts: Plus Jakarta Sans & Outfit -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    
     <!-- Tailwind via CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -39,7 +51,7 @@
       }
     </script>
   </head>
-  <body class="bg-stone-100 text-stone-900 selection:bg-amber-400 selection:text-stone-900 antialiased">
+  <body class="bg-stone-100 text-stone-900 selection:bg-amber-400 selection:text-stone-900 antialiased min-h-screen">
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>
