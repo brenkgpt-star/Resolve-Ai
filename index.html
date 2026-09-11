@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Resolve Aí — Diagnóstico Rápido e Marketplace de Ferramentas</title>
+    <meta name="description" content="Descubra o que quebrou na sua casa em 30 segundos e encontre as ferramentas e peças exatas no nosso marketplace para resolver sozinho sem pagar visita técnica." />
+    <!-- Google Fonts: Plus Jakarta Sans & Outfit -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <!-- Tailwind via CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
+              display: ['"Outfit"', '"Plus Jakarta Sans"', 'sans-serif'],
+              mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'monospace'],
+            },
+            colors: {
+              brand: {
+                yellow: '#FACC15',
+                amber: '#F59E0B',
+                orange: '#EA580C',
+                dark: '#1C1917',
+              }
+            },
+            boxShadow: {
+              'neo': '3px 3px 0px 0px #1c1917',
+              'neo-lg': '5px 5px 0px 0px #1c1917',
+              'neo-sm': '2px 2px 0px 0px #1c1917',
+              'neo-hover': '1px 1px 0px 0px #1c1917',
+            }
+          }
+        }
+      }
+    </script>
+  </head>
+  <body class="bg-stone-100 text-stone-900 selection:bg-amber-400 selection:text-stone-900 antialiased">
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>
