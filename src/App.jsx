@@ -74,7 +74,7 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen bg-stone-100 text-stone-900 font-sans flex flex-col justify-between">
+    <div className="min-h-screen bg-stone-100 text-stone-900 font-sans flex flex-col justify-between pb-16 sm:pb-0">
       <div>
         {/* Universal Header */}
         <Header

@@ -137,16 +137,16 @@ export default function ProductCard({ product, onSelectProduct, onAddToCart }) {
       <div className="grid grid-cols-2 gap-2">
         <button 
           onClick={handleOpenDetails}
-          className="border-2 border-stone-900 bg-white hover:bg-stone-100 text-stone-900 text-xs font-bold py-2 px-2 flex items-center justify-center gap-1 transition-colors"
+          className="border-2 border-stone-900 bg-white hover:bg-stone-100 text-stone-900 text-xs font-bold py-3 sm:py-2 px-2 flex items-center justify-center gap-1 transition-colors min-h-[48px] sm:min-h-0"
           title="Ver detalhes e como instalar"
         >
-          <Eye size={13} />
+          <Eye size={14} />
           <span>Detalhes</span>
         </button>
 
         <button 
           onClick={handleAdd}
-          className={`border-2 border-stone-900 text-xs font-bold py-2 px-2 flex items-center justify-center gap-1 transition-all ${
+          className={`border-2 border-stone-900 text-xs font-bold py-3 sm:py-2 px-2 flex items-center justify-center gap-1 transition-all min-h-[48px] sm:min-h-0 ${
             added 
               ? 'bg-emerald-500 text-white border-emerald-600' 
               : 'bg-stone-900 hover:bg-orange-700 text-white'
@@ -155,12 +155,12 @@ export default function ProductCard({ product, onSelectProduct, onAddToCart }) {
         >
           {added ? (
             <>
-              <Check size={13} />
+              <Check size={14} />
               <span>Pronto!</span>
             </>
           ) : (
             <>
-              <ShoppingBag size={13} />
+              <ShoppingBag size={14} />
               <span>Adicionar</span>
             </>
           )}

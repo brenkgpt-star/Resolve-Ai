@@ -18,21 +18,21 @@ export default function Hero({ onStartDiagnosis, onExploreMarketplace }) {
         </p>
 
         {/* Quick action buttons */}
-        <div className="flex flex-wrap items-center gap-3 mb-8">
+        <div className="flex flex-col sm:flex-row sm:flex-wrap sm:items-center gap-3 mb-8">
           <button
             onClick={onStartDiagnosis}
-            className="py-3 px-6 bg-stone-900 hover:bg-orange-700 text-white font-bold text-sm border-2 border-stone-900 shadow-neo neo-btn flex items-center gap-2"
+            className="w-full sm:w-auto py-4 sm:py-3 px-6 bg-stone-900 hover:bg-orange-700 text-white font-bold text-base sm:text-sm border-2 border-stone-900 shadow-neo neo-btn flex items-center justify-center gap-2 min-h-[52px] sm:min-h-0"
           >
             <span>Fazer Diagnóstico Gratuito</span>
-            <ArrowDown size={15} />
+            <ArrowDown size={16} />
           </button>
 
           <button
             onClick={onExploreMarketplace}
-            className="py-3 px-6 bg-white hover:bg-amber-100 text-stone-900 font-bold text-sm border-2 border-stone-900 shadow-neo neo-btn flex items-center gap-2"
+            className="w-full sm:w-auto py-4 sm:py-3 px-6 bg-white hover:bg-amber-100 text-stone-900 font-bold text-base sm:text-sm border-2 border-stone-900 shadow-neo neo-btn flex items-center justify-center gap-2 min-h-[52px] sm:min-h-0"
           >
-            <Search size={15} />
-            <span>Explorar Marketplace de Peças</span>
+            <Search size={16} />
+            <span>Explorar Marketplace</span>
           </button>
         </div>
 
