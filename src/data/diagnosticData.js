@@ -625,6 +625,7 @@ export const DIAGNOSIS_DATA = {
     diagnosis:
       'Na maioria esmagadora dos casos (cerca de 85%), o problema é a resistência elétrica que queimou ou perdeu contato. Trocar a resistência leva 15 minutos e custa uma fração do valor de um chuveiro novo.',
     productIds: ['resistencia-universal', 'chave-teste-tensao', 'kit-chaves-isoladas', 'multimetro-digital'],
+    productCategoryIds: ['resistencia-chuveiro', 'chave-phillips', 'chave-teste-tensao'],
   },
   torneira: {
     label: 'Torneira pingando ou vazando',
@@ -633,6 +634,7 @@ export const DIAGNOSIS_DATA = {
     diagnosis:
       'Vazamento na base ou pinga-pinga contínuo é quase sempre vedação gasta (o courinho ou anel oring ressecado) ou rosca frouxa. Um jogo de vedação e fita veda-rosca resolvem em 10 minutos sem quebrar nada.',
     productIds: ['fita-veda-rosca', 'kit-vedacoes-torneira', 'chave-inglesa-ajustavel', 'sifao-universal-sanfonado'],
+    productCategoryIds: ['fita-veda-rosca', 'kit-vedacao-torneira', 'chave-inglesa'],
   },
   tomada: {
     label: 'Tomada ou disjuntor',
@@ -641,6 +643,7 @@ export const DIAGNOSIS_DATA = {
     diagnosis:
       'Pode ser desde um parafuso frouxo que soltou o fio da tomada até sobrecarga no disjuntor. O primeiro passo indispensável é testar com a chave de teste para saber com segurança se tem energia no circuito.',
     productIds: ['chave-teste-tensao', 'kit-chaves-isoladas', 'fita-isolante-alta-fusao', 'disjuntor-unipolar'],
+    productCategoryIds: ['chave-teste-tensao', 'chave-phillips', 'fita-isolante'],
   },
   porta: {
     label: 'Porta raspando ou rangendo',
@@ -649,6 +652,7 @@ export const DIAGNOSIS_DATA = {
     diagnosis:
       'Dobradiça seca ou parafusos frouxos fazem a folha da porta pender milímetros, o suficiente para raspar no chão e fazer barulho insuportável. Um desengripante de alta penetração ou aperto com bucha nova resolvem na hora.',
     productIds: ['oleo-lubrificante-spray', 'kit-dobradicas-aco-inox', 'kit-buchas-parafusos', 'fechadura-quarto-banheiro'],
+    productCategoryIds: ['oleo-lubrificante', 'buchas-parafusos', 'chave-phillips'],
   },
   sifao: {
     label: 'Pia entupida / vazando embaixo',
@@ -657,6 +661,7 @@ export const DIAGNOSIS_DATA = {
     diagnosis:
       'Quase 90% das queixas em pias decorrem de acúmulo de gordura no copo do sifão ou ressecamento da vedação sanfonada. O sifão extensível universal moderno resolve tanto o escoamento quanto o mau cheiro.',
     productIds: ['sifao-universal-sanfonado', 'fita-veda-rosca', 'chave-inglesa-ajustavel', 'kit-vedacoes-torneira'],
+    productCategoryIds: ['sifao-sanfonado', 'chave-inglesa', 'fita-veda-rosca'],
   },
   outro: {
     label: 'Outro perrengue doméstico',
@@ -665,6 +670,7 @@ export const DIAGNOSIS_DATA = {
     diagnosis:
       'Para imprevistos gerais em casa, ter um kit básico com ferramentas de precisão, buchas universais e fita isolante resolve quase qualquer emergência antes que vire dor de cabeça.',
     productIds: ['maleta-ferramentas-40-pecas', 'fita-isolante-alta-fusao', 'multimetro-digital', 'massa-corrida-tapa-facil'],
+    productCategoryIds: ['maleta-ferramentas', 'buchas-parafusos', 'fita-isolante'],
   },
 }
 
@@ -695,4 +701,398 @@ export function matchFreeText(text) {
     return 'porta'
   }
   return 'outro'
+}
+
+// Helper: get product category suggestion objects for a diagnosis key
+export function getProductCategoriesForDiagnosis(key) {
+  const entry = DIAGNOSIS_DATA[key] || DIAGNOSIS_DATA.outro
+  return (entry.productCategoryIds || []).map((id) => PRODUCT_SUGGESTIONS[id]).filter(Boolean)
+}
+
+// ─── PRODUCT SUGGESTIONS (post-diagnosis category → variants) ────────────────
+export const PRODUCT_SUGGESTIONS = {
+  'resistencia-chuveiro': {
+    id: 'resistencia-chuveiro',
+    name: 'Resistência de Chuveiro',
+    description: 'A peça que esquenta a água — a mais trocada do Brasil',
+    emoji: '⚡',
+    colorClass: 'bg-amber-50 border-amber-300',
+    iconBg: 'bg-amber-100',
+    variants: [
+      {
+        id: 'rv-127-5400',
+        size: '127V · 5400W',
+        spec: 'Padrão residencial tensão baixa',
+        priceRange: 'R$ 25 – R$ 45',
+        tip: 'Confirme a voltagem no disjuntor do chuveiro ou na embalagem do aparelho',
+        mercadoLivreUrl: 'https://lista.mercadolivre.com.br/resistencia-chuveiro-127v-5400w',
+      },
+      {
+        id: 'rv-220-5500',
+        size: '220V · 5500W',
+        spec: 'Padrão residencial tensão alta',
+        priceRange: 'R$ 25 – R$ 45',
+        tip: 'O modelo mais vendido no Brasil — serve na maioria das cidades',
+        mercadoLivreUrl: 'https://lista.mercadolivre.com.br/resistencia-chuveiro-220v-5500w',
+      },
+      {
+        id: 'rv-220-7500',
+        size: '220V · 7500W',
+        spec: 'Alta potência — turbo / pressurizados',
+        priceRange: 'R$ 35 – R$ 65',
+        tip: 'Para chuveiros turbo ou com pressurizador embutido — verifique a etiqueta no aparelho',
+        mercadoLivreUrl: 'https://lista.mercadolivre.com.br/resistencia-chuveiro-220v-7500w',
+      },
+    ],
+  },
+
+  'chave-phillips': {
+    id: 'chave-phillips',
+    name: 'Chave de Fenda Phillips',
+    description: 'Para apertar parafusos em cruz — essencial em qualquer reparo elétrico',
+    emoji: '🔧',
+    colorClass: 'bg-stone-50 border-stone-300',
+    iconBg: 'bg-stone-200',
+    variants: [
+      {
+        id: 'ph0',
+        size: 'PH0 · Pequena',
+        spec: 'Ponta 3mm · cabo 75mm',
+        priceRange: 'R$ 5 – R$ 15',
+        tip: 'Parafusos miúdos de tampas, aparelhos eletrônicos e tomadas pequenas',
+        mercadoLivreUrl: 'https://lista.mercadolivre.com.br/chave-de-fenda-phillips-ph0',
+      },
+      {
+        id: 'ph1',
+        size: 'PH1 · Média',
+        spec: 'Ponta 5mm · cabo 100mm',
+        priceRange: 'R$ 8 – R$ 20',
+        tip: 'O tamanho mais versátil para uso doméstico geral — comece por este',
+        mercadoLivreUrl: 'https://lista.mercadolivre.com.br/chave-de-fenda-phillips-ph1',
+      },
+      {
+        id: 'ph2',
+        size: 'PH2 · Grande',
+        spec: 'Ponta 6mm · cabo 150mm',
+        priceRange: 'R$ 10 – R$ 25',
+        tip: 'Caixas de tomada, quadros elétricos e fixações de estrutura',
+        mercadoLivreUrl: 'https://lista.mercadolivre.com.br/chave-de-fenda-phillips-ph2',
+      },
+      {
+        id: 'ph-kit',
+        size: 'Kit Phillips · 3 peças',
+        spec: 'PH0 + PH1 + PH2 na mesma caixa',
+        priceRange: 'R$ 15 – R$ 35',
+        tip: 'A opção mais inteligente se você não tem nenhuma — resolve tudo de uma vez',
+        mercadoLivreUrl: 'https://lista.mercadolivre.com.br/jogo-chave-de-fenda-phillips-kit',
+      },
+    ],
+  },
+
+  'chave-teste-tensao': {
+    id: 'chave-teste-tensao',
+    name: 'Chave Teste de Tensão',
+    description: 'Verifica se há energia no fio antes de você tocar — segurança em primeiro lugar',
+    emoji: '🔍',
+    colorClass: 'bg-red-50 border-red-200',
+    iconBg: 'bg-red-100',
+    variants: [
+      {
+        id: 'ct-led',
+        size: 'LED simples · 100–500V',
+        spec: 'Acende quando detecta energia',
+        priceRange: 'R$ 8 – R$ 18',
+        tip: 'Suficiente para a maioria dos reparos domésticos — fácil e seguro de usar',
+        mercadoLivreUrl: 'https://lista.mercadolivre.com.br/chave-teste-tensao-led',
+      },
+      {
+        id: 'ct-digital',
+        size: 'Detector digital sem contato',
+        spec: 'Detecta energia sem encostar no fio',
+        priceRange: 'R$ 25 – R$ 55',
+        tip: 'Ideal para quem faz muitos reparos — detecta corrente a até 2cm do fio',
+        mercadoLivreUrl: 'https://lista.mercadolivre.com.br/detector-tensao-sem-contato-digital',
+      },
+    ],
+  },
+
+  'fita-isolante': {
+    id: 'fita-isolante',
+    name: 'Fita Isolante',
+    description: 'Isola emendas de fios e protege contra curto-circuito',
+    emoji: '🩹',
+    colorClass: 'bg-blue-50 border-blue-200',
+    iconBg: 'bg-blue-100',
+    variants: [
+      {
+        id: 'fi-10m',
+        size: '10 metros',
+        spec: '19mm de largura · uso residencial',
+        priceRange: 'R$ 4 – R$ 9',
+        tip: 'Para um reparo pontual — isola 1 ou 2 emendas com sobra',
+        mercadoLivreUrl: 'https://lista.mercadolivre.com.br/fita-isolante-10-metros',
+      },
+      {
+        id: 'fi-20m',
+        size: '20 metros',
+        spec: '19mm de largura · antichamas',
+        priceRange: 'R$ 7 – R$ 14',
+        tip: 'A mais vendida — boa para ter em casa para qualquer emergência',
+        mercadoLivreUrl: 'https://lista.mercadolivre.com.br/fita-isolante-20-metros-antichamas',
+      },
+      {
+        id: 'fi-kit3',
+        size: 'Kit 3 rolos coloridos',
+        spec: 'Preto, azul e vermelho — identifica fases',
+        priceRange: 'R$ 12 – R$ 22',
+        tip: 'Profissional: use cores para identificar fase, neutro e terra',
+        mercadoLivreUrl: 'https://lista.mercadolivre.com.br/kit-fita-isolante-colorida-3-unidades',
+      },
+    ],
+  },
+
+  'fita-veda-rosca': {
+    id: 'fita-veda-rosca',
+    name: 'Fita Veda-Rosca (Teflon)',
+    description: 'O segredo para parar qualquer vazamento em roscas de canos e torneiras',
+    emoji: '💧',
+    colorClass: 'bg-cyan-50 border-cyan-200',
+    iconBg: 'bg-cyan-100',
+    variants: [
+      {
+        id: 'vr-12mm',
+        size: '12mm × 10m',
+        spec: 'Padrão residencial — roscas 1/2"',
+        priceRange: 'R$ 3 – R$ 7',
+        tip: 'Para roscas pequenas de rabicho e conexões de 1/2"',
+        mercadoLivreUrl: 'https://lista.mercadolivre.com.br/fita-veda-rosca-teflon-12mm-10m',
+      },
+      {
+        id: 'vr-18mm',
+        size: '18mm × 25m',
+        spec: 'Extra larga — roscas 1/2" a 3/4"',
+        priceRange: 'R$ 5 – R$ 12',
+        tip: 'Mais versátil — serve para torneiras de 1/2" e 3/4" com mais cobertura',
+        mercadoLivreUrl: 'https://lista.mercadolivre.com.br/fita-veda-rosca-teflon-18mm-25m',
+      },
+      {
+        id: 'vr-25mm',
+        size: '25mm × 50m',
+        spec: 'Profissional · bobina grande',
+        priceRange: 'R$ 9 – R$ 18',
+        tip: 'Vale a pena se tiver mais de 3 conexões para vedar — sobra para próximas vezes',
+        mercadoLivreUrl: 'https://lista.mercadolivre.com.br/fita-veda-rosca-teflon-25mm-50m',
+      },
+    ],
+  },
+
+  'kit-vedacao-torneira': {
+    id: 'kit-vedacao-torneira',
+    name: 'Kit de Vedação para Torneira',
+    description: 'Borrachas e courinhos que param o pinga-pinga sem precisar trocar a torneira',
+    emoji: '🔄',
+    colorClass: 'bg-teal-50 border-teal-200',
+    iconBg: 'bg-teal-100',
+    variants: [
+      {
+        id: 'kv-basico',
+        size: 'Kit Básico · 6 peças',
+        spec: 'Courinhos tamanho universal',
+        priceRange: 'R$ 6 – R$ 13',
+        tip: 'Para torneiras comuns de bica e lavatório — verifique se é de 1/4 ou 1/2 volta',
+        mercadoLivreUrl: 'https://lista.mercadolivre.com.br/kit-vedacao-torneira-courinhos-6-pecas',
+      },
+      {
+        id: 'kv-completo',
+        size: 'Kit Completo · 12 peças',
+        spec: 'Courinhos + anéis o-ring sortidos',
+        priceRange: 'R$ 10 – R$ 22',
+        tip: 'Inclui diferentes tamanhos — recomendado se não souber o modelo exato da torneira',
+        mercadoLivreUrl: 'https://lista.mercadolivre.com.br/kit-vedacao-torneira-12-pecas-sortidos',
+      },
+      {
+        id: 'kv-premium',
+        size: 'Kit Premium · 20 peças',
+        spec: 'Courinhos + anéis + buchas de reparo',
+        priceRange: 'R$ 18 – R$ 35',
+        tip: 'Para torneiras de marcas como Deca, Docol, Lorenzetti — material mais resistente',
+        mercadoLivreUrl: 'https://lista.mercadolivre.com.br/kit-reparo-torneira-completo-20-pecas',
+      },
+    ],
+  },
+
+  'chave-inglesa': {
+    id: 'chave-inglesa',
+    name: 'Chave Inglesa Ajustável',
+    description: 'Para apertar e soltar conexões hidráulicas sem arranhar o metal',
+    emoji: '🪛',
+    colorClass: 'bg-stone-50 border-stone-300',
+    iconBg: 'bg-stone-200',
+    variants: [
+      {
+        id: 'ci-6pol',
+        size: '6 polegadas · 150mm',
+        spec: 'Abertura máx 22mm',
+        priceRange: 'R$ 22 – R$ 40',
+        tip: 'Para torneiras de pia e rabicho de vaso sanitário',
+        mercadoLivreUrl: 'https://lista.mercadolivre.com.br/chave-inglesa-ajustavel-6-polegadas',
+      },
+      {
+        id: 'ci-8pol',
+        size: '8 polegadas · 200mm',
+        spec: 'Abertura máx 28mm',
+        priceRange: 'R$ 30 – R$ 55',
+        tip: 'A mais versátil para uso doméstico — recomendada para quem não tem nenhuma',
+        mercadoLivreUrl: 'https://lista.mercadolivre.com.br/chave-inglesa-ajustavel-8-polegadas',
+      },
+      {
+        id: 'ci-10pol',
+        size: '10 polegadas · 250mm',
+        spec: 'Abertura máx 35mm — conexões grandes',
+        priceRange: 'R$ 40 – R$ 70',
+        tip: 'Para sifões, registros de gaveta e conexões de 1.1/4" ou maiores',
+        mercadoLivreUrl: 'https://lista.mercadolivre.com.br/chave-inglesa-ajustavel-10-polegadas',
+      },
+    ],
+  },
+
+  'oleo-lubrificante': {
+    id: 'oleo-lubrificante',
+    name: 'Óleo Lubrificante / Desengripante',
+    description: 'Elimina rangido e solta dobradiças e parafusos enferrujados na hora',
+    emoji: '🫙',
+    colorClass: 'bg-yellow-50 border-yellow-200',
+    iconBg: 'bg-yellow-100',
+    variants: [
+      {
+        id: 'ol-200ml',
+        size: '200ml',
+        spec: 'Spray básico — uso pontual',
+        priceRange: 'R$ 10 – R$ 18',
+        tip: 'Para 1 ou 2 dobradiças ou fechaduras — suficiente para um reparo',
+        mercadoLivreUrl: 'https://lista.mercadolivre.com.br/oleo-lubrificante-desengripante-spray-200ml',
+      },
+      {
+        id: 'ol-300ml',
+        size: '300ml',
+        spec: 'Spray com caninho aplicador',
+        priceRange: 'R$ 14 – R$ 26',
+        tip: 'O mais popular — caninho permite aplicar direto no pino da dobradiça',
+        mercadoLivreUrl: 'https://lista.mercadolivre.com.br/oleo-lubrificante-desengripante-spray-300ml',
+      },
+      {
+        id: 'ol-400ml',
+        size: '400ml',
+        spec: 'Profissional · mais economia',
+        priceRange: 'R$ 20 – R$ 36',
+        tip: 'Para portão de garagem, trilhos de janelas e múltiplas dobradiças de uma vez',
+        mercadoLivreUrl: 'https://lista.mercadolivre.com.br/oleo-lubrificante-desengripante-spray-400ml',
+      },
+    ],
+  },
+
+  'buchas-parafusos': {
+    id: 'buchas-parafusos',
+    name: 'Buchas e Parafusos',
+    description: 'Para fixar qualquer coisa na parede com firmeza e segurança',
+    emoji: '🔩',
+    colorClass: 'bg-orange-50 border-orange-200',
+    iconBg: 'bg-orange-100',
+    variants: [
+      {
+        id: 'bp-6mm',
+        size: 'Bucha 6mm + Parafuso 4×35',
+        spec: 'Para fixações leves — até 10kg',
+        priceRange: 'R$ 5 – R$ 12',
+        tip: 'Quadros, espelhos leves e suportes plásticos na parede',
+        mercadoLivreUrl: 'https://lista.mercadolivre.com.br/bucha-s6-parafuso-kit',
+      },
+      {
+        id: 'bp-8mm',
+        size: 'Bucha 8mm + Parafuso 5×50',
+        spec: 'Para fixações médias — até 25kg',
+        priceRange: 'R$ 6 – R$ 14',
+        tip: 'Prateleiras, armários e suportes de TV — o tamanho mais usado em casa',
+        mercadoLivreUrl: 'https://lista.mercadolivre.com.br/bucha-s8-parafuso-kit',
+      },
+      {
+        id: 'bp-kit',
+        size: 'Kit Sortido · 60 a 200 peças',
+        spec: 'Buchas 5, 6, 8 e 10mm + parafusos',
+        priceRange: 'R$ 15 – R$ 40',
+        tip: 'O mais inteligente: resolve qualquer situação sem precisar adivinhar o tamanho',
+        mercadoLivreUrl: 'https://lista.mercadolivre.com.br/kit-sortido-buchas-parafusos-maleta',
+      },
+    ],
+  },
+
+  'sifao-sanfonado': {
+    id: 'sifao-sanfonado',
+    name: 'Sifão Sanfonado para Pia',
+    description: 'Resolve o mau cheiro do ralo e o vazamento embaixo da bancada',
+    emoji: '🚿',
+    colorClass: 'bg-blue-50 border-blue-200',
+    iconBg: 'bg-blue-100',
+    variants: [
+      {
+        id: 'sf-simples',
+        size: 'Simples · 1 saída',
+        spec: 'DN 40/50 · 35cm comprimento',
+        priceRange: 'R$ 12 – R$ 22',
+        tip: 'Para pia de banheiro com um único ponto de esgoto na parede',
+        mercadoLivreUrl: 'https://lista.mercadolivre.com.br/sifao-sanfonado-simples-pia',
+      },
+      {
+        id: 'sf-extensivel',
+        size: 'Extensível · ajustável',
+        spec: 'DN 40/50 · 35cm a 75cm',
+        priceRange: 'R$ 16 – R$ 30',
+        tip: 'Ideal quando o cano de esgoto na parede não está na altura certa',
+        mercadoLivreUrl: 'https://lista.mercadolivre.com.br/sifao-sanfonado-extensivel-universal',
+      },
+      {
+        id: 'sf-copo',
+        size: 'Extensível com copo de limpeza',
+        spec: 'DN 40/50 · copinho rosqueável',
+        priceRange: 'R$ 20 – R$ 38',
+        tip: 'O melhor custo-benefício — limpa entupimentos sem desmontar tudo',
+        mercadoLivreUrl: 'https://lista.mercadolivre.com.br/sifao-sanfonado-extensivel-com-copo',
+      },
+    ],
+  },
+
+  'maleta-ferramentas': {
+    id: 'maleta-ferramentas',
+    name: 'Kit de Ferramentas Domésticas',
+    description: 'Um kit básico resolve 90% dos imprevistos de quem mora sozinho',
+    emoji: '🧰',
+    colorClass: 'bg-stone-50 border-stone-300',
+    iconBg: 'bg-stone-200',
+    variants: [
+      {
+        id: 'mf-18',
+        size: 'Básico · 18 peças',
+        spec: 'Martelo, alicate, 6 chaves e trena',
+        priceRange: 'R$ 40 – R$ 70',
+        tip: 'Para quem não tem nenhuma ferramenta — cobre as emergências mais comuns',
+        mercadoLivreUrl: 'https://lista.mercadolivre.com.br/kit-ferramentas-domesticas-18-pecas',
+      },
+      {
+        id: 'mf-30',
+        size: 'Intermediário · 30 peças',
+        spec: '+ Jogo de soquetes, estilete e fita',
+        priceRange: 'R$ 60 – R$ 100',
+        tip: 'Para quem já tem algumas ferramentas mas quer completar — o mais popular',
+        mercadoLivreUrl: 'https://lista.mercadolivre.com.br/kit-ferramentas-domesticas-30-pecas',
+      },
+      {
+        id: 'mf-40',
+        size: 'Completo · 40 peças',
+        spec: '+ Bits com catraca e maleta rígida',
+        priceRange: 'R$ 85 – R$ 150',
+        tip: 'O mais completo — maleta rígida organizada para guardar em qualquer lugar',
+        mercadoLivreUrl: 'https://lista.mercadolivre.com.br/maleta-ferramentas-domesticas-40-pecas',
+      },
+    ],
+  },
 }

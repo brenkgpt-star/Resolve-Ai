@@ -1,6 +1,9 @@
-import { Sparkles, Search, ArrowDown } from 'lucide-react'
+import { Sparkles, ArrowDown, UserPlus } from 'lucide-react'
+import { useAuth } from '../context/AuthContext.jsx'
 
-export default function Hero({ onStartDiagnosis, onExploreMarketplace }) {
+export default function Hero({ onStartDiagnosis }) {
+  const { user, openSignupModal } = useAuth()
+
   return (
     <section className="border-b-2 border-stone-900 px-4 sm:px-6 pt-12 pb-10 bg-gradient-to-b from-stone-50 to-stone-100">
       <div className="max-w-5xl mx-auto">
@@ -10,30 +13,32 @@ export default function Hero({ onStartDiagnosis, onExploreMarketplace }) {
         </div>
 
         <h1 className="text-4xl sm:text-5xl md:text-6xl font-black tracking-tight leading-[0.98] max-w-2xl mb-5 text-stone-900">
-          Quebrou em casa? Descubra o que comprar em 30 segundos.
+          Quebrou em casa? Descubra a peça e a ferramenta exata em 30 segundos.
         </h1>
 
         <p className="text-stone-700 text-base sm:text-lg max-w-xl mb-8 leading-relaxed">
-          Sem termos técnicos complicados. Conte o que aconteceu, nosso assistente inteligente identifica o defeito e monta o kit de ferramentas e peças exatas no nosso marketplace.
+          Sem termos técnicos complicados. Conte o que aconteceu, nosso assistente inteligente identifica o defeito e indica a solução exata com tamanhos recomendados e onde comprar.
         </p>
 
         {/* Quick action buttons */}
         <div className="flex flex-col sm:flex-row sm:flex-wrap sm:items-center gap-3 mb-8">
           <button
             onClick={onStartDiagnosis}
-            className="w-full sm:w-auto py-4 sm:py-3 px-6 bg-stone-900 hover:bg-orange-700 text-white font-bold text-base sm:text-sm border-2 border-stone-900 shadow-neo neo-btn flex items-center justify-center gap-2 min-h-[52px] sm:min-h-0"
+            className="w-full sm:w-auto py-4 sm:py-3 px-6 bg-stone-900 hover:bg-orange-700 text-white font-bold text-base sm:text-sm border-2 border-stone-900 shadow-neo neo-btn flex items-center justify-center gap-2 min-h-[52px] sm:min-h-0 cursor-pointer"
           >
             <span>Fazer Diagnóstico Gratuito</span>
             <ArrowDown size={16} />
           </button>
 
-          <button
-            onClick={onExploreMarketplace}
-            className="w-full sm:w-auto py-4 sm:py-3 px-6 bg-white hover:bg-amber-100 text-stone-900 font-bold text-base sm:text-sm border-2 border-stone-900 shadow-neo neo-btn flex items-center justify-center gap-2 min-h-[52px] sm:min-h-0"
-          >
-            <Search size={16} />
-            <span>Explorar Marketplace</span>
-          </button>
+          {!user && (
+            <button
+              onClick={openSignupModal}
+              className="w-full sm:w-auto py-4 sm:py-3 px-6 bg-white hover:bg-amber-100 text-stone-900 font-bold text-base sm:text-sm border-2 border-stone-900 shadow-neo neo-btn flex items-center justify-center gap-2 min-h-[52px] sm:min-h-0 cursor-pointer"
+            >
+              <UserPlus size={16} />
+              <span>Criar Conta Gratuita</span>
+            </button>
+          )}
         </div>
 
         {/* Real life scenario box */}

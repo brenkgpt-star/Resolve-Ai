@@ -2,7 +2,7 @@ import ChatMessage from './ChatMessage.jsx'
 import TypingIndicator from './TypingIndicator.jsx'
 import ChipList from './ChipList.jsx'
 import FreeformInput from './FreeformInput.jsx'
-import { RotateCcw, ArrowRight, Sparkles } from 'lucide-react'
+import { RotateCcw, Sparkles } from 'lucide-react'
 
 export default function DiagnosticChat({ 
   messages, 
@@ -11,7 +11,6 @@ export default function DiagnosticChat({
   onSelectChip, 
   onFreeText,
   onReset,
-  onExploreMarketplace,
   marketVisible
 }) {
   return (
@@ -76,17 +75,11 @@ export default function DiagnosticChat({
 
           {/* Post-Diagnosis Actions */}
           {marketVisible && !typing && (
-            <div className="bg-amber-50 border-t-2 border-stone-900 p-4 flex flex-wrap items-center justify-between gap-3">
-              <div className="text-xs text-stone-800 font-medium">
-                💡 O kit com as peças certas foi montado logo abaixo!
+            <div className="bg-amber-50 border-t-2 border-stone-900 p-3.5 flex items-center justify-between gap-3">
+              <div className="text-xs text-stone-800 font-bold flex items-center gap-2">
+                <span>💡</span>
+                <span>Diagnóstico pronto! Veja abaixo os itens recomendados e escolha o tamanho ideal.</span>
               </div>
-              <button
-                onClick={onExploreMarketplace}
-                className="py-1.5 px-3 bg-amber-400 hover:bg-amber-300 text-stone-900 font-bold text-xs border border-stone-900 shadow-neo-sm neo-btn flex items-center gap-1.5"
-              >
-                <span>Ver Catálogo Completo de Peças</span>
-                <ArrowRight size={13} />
-              </button>
             </div>
           )}
 

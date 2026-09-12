@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react'
-import { DIAGNOSIS_DATA, getProductsForDiagnosis, matchFreeText } from '../data/diagnosticData.js'
+import { DIAGNOSIS_DATA, getProductsForDiagnosis, getProductCategoriesForDiagnosis, matchFreeText } from '../data/diagnosticData.js'
 
 export function useDiagnosis() {
   const [messages, setMessages] = useState([
@@ -8,6 +8,7 @@ export function useDiagnosis() {
   const [typing, setTyping] = useState(false)
   const [chipsVisible, setChipsVisible] = useState(true)
   const [products, setProducts] = useState([])
+  const [productCategories, setProductCategories] = useState([])
   const [marketVisible, setMarketVisible] = useState(false)
   const [marketNote, setMarketNote] = useState('')
   const [currentKey, setCurrentKey] = useState(null)
@@ -29,7 +30,9 @@ export function useDiagnosis() {
       setMessages((prev) => [...prev, { who: 'bot', text: entry.diagnosis }])
       
       const loadedProducts = getProductsForDiagnosis(key)
+      const loadedCategories = getProductCategoriesForDiagnosis(key)
       setProducts(loadedProducts)
+      setProductCategories(loadedCategories)
       setMarketNote('Baseado no diagnóstico — kit recomendado para resolver sozinho sem pagar visita técnica.')
       setMarketVisible(true)
 
@@ -54,6 +57,7 @@ export function useDiagnosis() {
     setTyping(false)
     setChipsVisible(true)
     setProducts([])
+    setProductCategories([])
     setMarketVisible(false)
     setMarketNote('')
     setCurrentKey(null)
@@ -64,6 +68,7 @@ export function useDiagnosis() {
     typing,
     chipsVisible,
     products,
+    productCategories,
     marketVisible,
     marketNote,
     marketRef,
