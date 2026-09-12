@@ -1,7 +1,7 @@
-import { Wrench, Sparkles, User, LogOut, LogIn } from 'lucide-react'
+import { Wrench, Sparkles, Calendar as CalendarIcon, User, LogOut, LogIn } from 'lucide-react'
 import { useAuth } from '../context/AuthContext.jsx'
 
-export default function Header({ onStartDiagnosis }) {
+export default function Header({ activeTab, setActiveTab, onStartDiagnosis }) {
   const { user, logout, openLoginModal, openSignupModal } = useAuth()
 
   return (
@@ -12,7 +12,7 @@ export default function Header({ onStartDiagnosis }) {
 
           {/* Brand / Logo */}
           <button
-            onClick={onStartDiagnosis}
+            onClick={() => setActiveTab('diagnosis')}
             className="flex items-center gap-2.5 text-left group transition-transform active:scale-95 cursor-pointer"
           >
             <div className="w-9 h-9 bg-stone-900 border-2 border-stone-900 flex items-center justify-center shadow-neo-sm group-hover:bg-amber-400 transition-colors">
@@ -23,16 +23,37 @@ export default function Header({ onStartDiagnosis }) {
                 Resolve Aí
               </span>
               <span className="text-[10px] font-bold text-stone-500 tracking-wider uppercase block">
-                Diagnóstico Inteligente
+                Diagnóstico & Calendário
               </span>
             </div>
           </button>
 
-          {/* Central Tagline */}
-          <div className="hidden md:flex items-center gap-2 px-3 py-1 bg-white border border-stone-300 text-xs font-semibold text-stone-600 rounded-sm">
-            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-            <span>Assistente de Reparos Domésticos Online</span>
-          </div>
+          {/* Central Navigation Tabs (Desktop & Tablet) */}
+          <nav className="hidden sm:flex items-center gap-2">
+            <button
+              onClick={() => setActiveTab('diagnosis')}
+              className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-black uppercase tracking-wider border-2 transition-all cursor-pointer ${
+                activeTab === 'diagnosis'
+                  ? 'bg-amber-400 text-stone-900 border-stone-900 shadow-neo-sm'
+                  : 'bg-transparent text-stone-600 border-transparent hover:border-stone-300 hover:text-stone-900'
+              }`}
+            >
+              <Sparkles size={14} className={activeTab === 'diagnosis' ? 'text-stone-900' : 'text-amber-500'} />
+              <span>Diagnóstico IA</span>
+            </button>
+
+            <button
+              onClick={() => setActiveTab('history')}
+              className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-black uppercase tracking-wider border-2 transition-all cursor-pointer ${
+                activeTab === 'history'
+                  ? 'bg-amber-400 text-stone-900 border-stone-900 shadow-neo-sm'
+                  : 'bg-transparent text-stone-600 border-transparent hover:border-stone-300 hover:text-stone-900'
+              }`}
+            >
+              <CalendarIcon size={14} />
+              <span>Histórico & Calendário</span>
+            </button>
+          </nav>
 
           {/* Right side: Auth Actions */}
           <div className="flex items-center gap-2 sm:gap-3">
@@ -84,11 +105,23 @@ export default function Header({ onStartDiagnosis }) {
       {/* ── Bottom Nav Bar — mobile only ────────────────────── */}
       <nav className="sm:hidden fixed bottom-0 left-0 right-0 z-40 border-t-2 border-stone-900 bg-stone-100 flex shadow-lg">
         <button
-          onClick={onStartDiagnosis}
-          className="flex-1 flex flex-col items-center justify-center gap-1 py-3 text-[11px] font-bold bg-amber-400 text-stone-900"
+          onClick={() => setActiveTab('diagnosis')}
+          className={`flex-1 flex flex-col items-center justify-center gap-1 py-3 text-[11px] font-bold transition-colors ${
+            activeTab === 'diagnosis' ? 'bg-amber-400 text-stone-900' : 'text-stone-600 bg-stone-100'
+          }`}
         >
           <Sparkles size={20} />
           <span>Diagnóstico</span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab('history')}
+          className={`flex-1 flex flex-col items-center justify-center gap-1 py-3 text-[11px] font-bold border-l-2 border-stone-900 transition-colors ${
+            activeTab === 'history' ? 'bg-amber-400 text-stone-900' : 'text-stone-600 bg-stone-100'
+          }`}
+        >
+          <CalendarIcon size={20} />
+          <span>Calendário</span>
         </button>
 
         {user ? (
@@ -105,7 +138,7 @@ export default function Header({ onStartDiagnosis }) {
             className="flex-1 flex flex-col items-center justify-center gap-1 py-3 text-[11px] font-bold border-l-2 border-stone-900 text-stone-700 bg-white"
           >
             <User size={20} />
-            <span>Entrar / Conta</span>
+            <span>Conta</span>
           </button>
         )}
       </nav>

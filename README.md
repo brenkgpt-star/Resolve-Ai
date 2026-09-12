@@ -52,11 +52,12 @@ npm run preview
 
 ## O que ainda é "mockado" (precisa virar de verdade)
 
-- O diagnóstico em `useDiagnosis.js` é baseado em regras fixas (`DIAGNOSIS_DATA`), não chama
-  nenhuma IA de verdade. Pra conectar a um modelo real, trocar a lógica dentro de
-  `runDiagnosis()` por uma chamada de API (ex: Anthropic) que recebe a descrição do usuário
-  e devolve diagnóstico + categoria de produtos.
-- Os botões "Ver oferta" não têm link real ainda — precisam apontar pra ofertas/afiliados de
-  verdade.
-- O Tailwind está sendo carregado via CDN no `index.html` pra manter o setup simples. Se o
-  projeto crescer, vale trocar por Tailwind instalado via PostCSS (`npm install -D tailwindcss`).
+* O diagnóstico em `useDiagnosis.js` é baseado em regras fixas (`DIAGNOSIS\\\_DATA`), não chama
+nenhuma IA de verdade. Pra conectar a um modelo real, trocar a lógica dentro de
+`runDiagnosis()` por uma chamada de API (ex: Anthropic) que recebe a descrição do usuário
+e devolve diagnóstico + categoria de produtos.
+* Os botões "Ver oferta" não têm link real ainda — precisam apontar pra ofertas/afiliados de
+verdade.
+* O Tailwind está sendo carregado via CDN no `index.html` pra manter o setup simples. Se o
+projeto crescer, vale trocar por Tailwind instalado via PostCSS (`npm install -D tailwindcss`).
+
