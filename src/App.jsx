@@ -5,14 +5,18 @@ import DiagnosticChat from './components/DiagnosticChat.jsx'
 import ProductSuggestionSection from './components/ProductSuggestionSection.jsx'
 import HowItWorks from './components/HowItWorks.jsx'
 import HistoryCalendarScreen from './components/HistoryCalendarScreen.jsx'
+import MarketplaceScreen from './components/MarketplaceScreen.jsx'
+import ProductDetailModal from './components/ProductDetailModal.jsx'
 import Footer from './components/Footer.jsx'
 import AuthModal from './components/AuthModal.jsx'
+import { ThemeProvider } from './context/ThemeContext.jsx'
 import { AuthProvider, useAuth } from './context/AuthContext.jsx'
 import { useDiagnosis } from './hooks/useDiagnosis.js'
 
 function AppContent() {
-  const [activeTab, setActiveTab] = useState('diagnosis') // 'diagnosis' | 'history'
-  const { isAuthModalOpen, setIsAuthModalOpen, authModalMode } = useAuth()
+  const [activeTab, setActiveTab] = useState('diagnosis') // 'diagnosis' | 'products' | 'history'
+  const [selectedProduct, setSelectedProduct] = useState(null)
+  const { user, isAuthModalOpen, setIsAuthModalOpen, authModalMode, openLoginModal } = useAuth()
 
   const {
     messages,
@@ -28,6 +32,10 @@ function AppContent() {
   } = useDiagnosis()
 
   function scrollToChat() {
+    if (!user) {
+      openLoginModal()
+      return
+    }
     setActiveTab('diagnosis')
     setTimeout(() => {
       const el = document.getElementById('diagnostico-section')
@@ -38,9 +46,9 @@ function AppContent() {
   }
 
   return (
-    <div className="min-h-screen bg-stone-100 text-stone-900 font-sans flex flex-col justify-between pb-16 sm:pb-0">
+    <div className="min-h-screen bg-stone-100 dark:bg-stone-950 text-stone-900 dark:text-stone-100 font-sans flex flex-col justify-between pb-16 sm:pb-0 transition-colors duration-200">
       <div>
-        {/* Universal Header with Navigation & Auth */}
+        {/* Universal Header with 3 Tabs & Auth */}
         <Header
           activeTab={activeTab}
           setActiveTab={setActiveTab}
@@ -48,7 +56,7 @@ function AppContent() {
         />
 
         {/* Tab 1: Diagnóstico Inteligente com IA Investigativa & Visão */}
-        {activeTab === 'diagnosis' ? (
+        {activeTab === 'diagnosis' && (
           <main>
             <Hero onStartDiagnosis={scrollToChat} />
 
@@ -69,19 +77,29 @@ function AppContent() {
               <ProductSuggestionSection
                 ref={marketRef}
                 categories={productCategories}
+                onExploreProducts={() => setActiveTab('products')}
               />
             )}
 
             <HowItWorks />
           </main>
-        ) : (
-          /* Tab 2: Histórico de Consertos & Calendário Mensal Quadriculado */
+        )}
+
+        {/* Tab 2: Catálogo Completo de Produtos & Mercado Livre */}
+        {activeTab === 'products' && (
+          <main>
+            <MarketplaceScreen
+              onSelectProduct={(p) => setSelectedProduct(p)}
+              onSwitchToDiagnosis={scrollToChat}
+            />
+          </main>
+        )}
+
+        {/* Tab 3: Histórico de Consertos & Calendário Mensal */}
+        {activeTab === 'history' && (
           <main>
             <HistoryCalendarScreen
-              onSwitchToDiagnosis={() => {
-                setActiveTab('diagnosis')
-                scrollToChat()
-              }}
+              onSwitchToDiagnosis={scrollToChat}
             />
           </main>
         )}
@@ -89,6 +107,14 @@ function AppContent() {
 
       {/* Universal Footer */}
       <Footer onScrollToChat={scrollToChat} />
+
+      {/* Modal de Detalhes do Produto com Link Direto Mercado Livre */}
+      {selectedProduct && (
+        <ProductDetailModal
+          product={selectedProduct}
+          onClose={() => setSelectedProduct(null)}
+        />
+      )}
 
       {/* Authentication Modal */}
       <AuthModal
@@ -102,8 +128,10 @@ function AppContent() {
 
 export default function App() {
   return (
-    <AuthProvider>
-      <AppContent />
-    </AuthProvider>
+    <ThemeProvider>
+      <AuthProvider>
+        <AppContent />
+      </AuthProvider>
+    </ThemeProvider>
   )
 }

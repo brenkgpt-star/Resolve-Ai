@@ -21,10 +21,26 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     
+    <!-- Script anti-flash de tema escuro -->
+    <script>
+      (function() {
+        try {
+          var saved = localStorage.getItem('resolve_ai_theme');
+          var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          if (saved === 'dark' || (!saved && prefersDark)) {
+            document.documentElement.classList.add('dark');
+          } else {
+            document.documentElement.classList.remove('dark');
+          }
+        } catch (e) {}
+      })();
+    </script>
+    
     <!-- Tailwind via CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
       tailwind.config = {
+        darkMode: 'class',
         theme: {
           extend: {
             fontFamily: {
@@ -42,16 +58,19 @@
             },
             boxShadow: {
               'neo': '3px 3px 0px 0px #1c1917',
+              'neo-dark': '3px 3px 0px 0px #f59e0b',
               'neo-lg': '5px 5px 0px 0px #1c1917',
               'neo-sm': '2px 2px 0px 0px #1c1917',
               'neo-hover': '1px 1px 0px 0px #1c1917',
+              'card': '0 4px 20px -2px rgba(0, 0, 0, 0.05)',
+              'card-dark': '0 4px 20px -2px rgba(0, 0, 0, 0.4)',
             }
           }
         }
       }
     </script>
   </head>
-  <body class="bg-stone-100 text-stone-900 selection:bg-amber-400 selection:text-stone-900 antialiased min-h-screen">
+  <body class="bg-stone-100 dark:bg-stone-950 text-stone-900 dark:text-stone-100 selection:bg-amber-400 selection:text-stone-900 antialiased min-h-screen transition-colors duration-200">
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>

@@ -39,40 +39,16 @@ export const historyService = {
   getTasks() {
     try {
       const raw = localStorage.getItem(STORAGE_TASKS_KEY)
-      if (raw) return JSON.parse(raw)
-
-      // Se não houver tarefas salvas ainda, adiciona tarefas de exemplo inteligentes
-      const today = new Date()
-      const fmt = (d) => d.toISOString().split('T')[0]
-      
-      const in3Days = new Date(today)
-      in3Days.setDate(today.getDate() + 3)
-
-      const in8Days = new Date(today)
-      in8Days.setDate(today.getDate() + 8)
-
-      const initial = [
-        {
-          id: 'task_1',
-          date: fmt(in3Days),
-          title: 'Limpar copo do sifão e ralos',
-          category: 'Hidráulica',
-          priority: 'Média',
-          completed: false,
-          notes: 'Prevenção periódica contra mau cheiro e acúmulo de gordura.',
-        },
-        {
-          id: 'task_2',
-          date: fmt(in8Days),
-          title: 'Lubrificar dobradiças das portas',
-          category: 'Geral',
-          priority: 'Baixa',
-          completed: false,
-          notes: 'Aplicar desengripante com caninho aplicador para não ranger.',
+      if (raw) {
+        const parsed = JSON.parse(raw)
+        // Filtra quaisquer tarefas de exemplo pré-definidas anteriores (task_1, task_2)
+        const cleaned = parsed.filter((t) => t.id !== 'task_1' && t.id !== 'task_2')
+        if (cleaned.length !== parsed.length) {
+          this.saveAllTasks(cleaned)
         }
-      ]
-      this.saveAllTasks(initial)
-      return initial
+        return cleaned
+      }
+      return []
     } catch {
       return []
     }
@@ -130,5 +106,9 @@ export const historyService = {
       return task
     }
     return null
+  },
+
+  toggleTaskCompletion(id) {
+    return this.toggleTaskCompleted(id)
   }
 }

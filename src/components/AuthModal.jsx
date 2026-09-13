@@ -80,35 +80,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }) {
     setError('')
     setSuccessMessage('')
 
-    if (mode === 'signup') {
-      if (!name.trim()) {
-        setError('Por favor, informe seu nome completo.')
-        return
-      }
-      if (!passwordRules.hasMinLength) {
-        setError('A senha deve ter no mínimo 8 dígitos.')
-        return
-      }
-      if (!passwordRules.hasUppercase) {
-        setError('A senha deve conter pelo menos 1 letra maiúscula.')
-        return
-      }
-      if (password !== confirmPassword) {
-        setError('As senhas não coincidem.')
-        return
-      }
-
-      setSubmitting(true)
-      try {
-        await signup(name, email, password)
-        resetForm()
-        onClose()
-      } catch (err) {
-        setError(err.message || 'Erro ao realizar cadastro.')
-      } finally {
-        setSubmitting(false)
-      }
-    } else if (mode === 'login') {
+    if (mode === 'login') {
       if (!email.trim() || !password) {
         setError('Preencha seu e-mail e sua senha.')
         return
@@ -120,13 +92,33 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }) {
         resetForm()
         onClose()
       } catch (err) {
-        setError(err.message || 'Erro ao fazer login. Verifique seus dados.')
+        setError(err.message || 'Falha ao realizar login.')
       } finally {
         setSubmitting(false)
       }
-    } else if (mode === 'forgot') {
+    }
+
+    if (mode === 'signup') {
+      if (!isSignupValid) {
+        setError('Por favor, atenda a todos os requisitos de senha e preencha seus dados.')
+        return
+      }
+
+      setSubmitting(true)
+      try {
+        await signup(name, email, password)
+        resetForm()
+        onClose()
+      } catch (err) {
+        setError(err.message || 'Falha ao criar conta.')
+      } finally {
+        setSubmitting(false)
+      }
+    }
+
+    if (mode === 'forgot') {
       if (!email.trim() || !email.includes('@')) {
-        setError('Digite um e-mail válido para recuperação.')
+        setError('Digite um e-mail válido.')
         return
       }
 
@@ -143,16 +135,16 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }) {
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-stone-900/80 backdrop-blur-sm animate-fadeIn">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-stone-950/70 backdrop-blur-sm animate-fadeIn">
       {/* Click outside backdrop */}
       <div className="fixed inset-0" onClick={onClose} />
 
       {/* Modal Box */}
-      <div className="relative w-full max-w-md bg-stone-100 border-2 border-stone-900 shadow-neo z-10 overflow-hidden my-auto">
+      <div className="relative w-full max-w-md bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-2xl shadow-2xl z-10 overflow-hidden my-auto transition-colors duration-200">
         
         {/* Header Strip */}
-        <div className="bg-stone-900 text-white px-5 py-3.5 flex items-center justify-between border-b-2 border-stone-900">
-          <div className="flex items-center gap-2">
+        <div className="bg-stone-900 dark:bg-stone-950 text-white px-5 py-4 flex items-center justify-between border-b border-stone-800">
+          <div className="flex items-center gap-2.5">
             <span className="w-2.5 h-2.5 rounded-full bg-amber-400" />
             <span className="font-mono text-xs tracking-wider uppercase font-bold text-amber-400">
               {mode === 'login' && 'Autenticação // Entrar'}
@@ -163,10 +155,10 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }) {
 
           <button
             onClick={onClose}
-            className="text-stone-400 hover:text-white p-1 hover:bg-stone-800 transition-colors"
+            className="text-stone-400 hover:text-white p-1 rounded-lg hover:bg-stone-800 transition-colors"
             title="Fechar"
           >
-            <X size={20} />
+            <X size={18} />
           </button>
         </div>
 
@@ -174,14 +166,14 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }) {
         <div className="p-5 sm:p-6 max-h-[85vh] overflow-y-auto">
 
           {/* Database / Firebase Status Pill */}
-          <div className="flex items-center justify-between bg-white border-2 border-stone-900 px-3 py-1.5 mb-5 shadow-neo-sm">
-            <div className="flex items-center gap-1.5 text-[11px] font-bold text-stone-700">
+          <div className="flex items-center justify-between bg-stone-50 dark:bg-stone-800/60 border border-stone-200 dark:border-stone-700/80 px-3 py-1.5 rounded-xl mb-5">
+            <div className="flex items-center gap-1.5 text-[11px] font-bold text-stone-700 dark:text-stone-300">
               <Database size={13} className={isFirebaseActive ? "text-amber-500" : "text-blue-500"} />
               <span>Banco de Dados:</span>
               <span className={`px-1.5 py-0.5 rounded font-mono text-[10px] ${
                 isFirebaseActive 
                   ? 'bg-amber-100 text-amber-900 font-black' 
-                  : 'bg-stone-200 text-stone-800'
+                  : 'bg-stone-200 dark:bg-stone-700 text-stone-800 dark:text-stone-200'
               }`}>
                 {isFirebaseActive ? 'FIREBASE CONECTADO' : 'MODO LOCAL (PRONTO P/ FIREBASE)'}
               </span>
@@ -191,12 +183,12 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }) {
 
           {/* Title & Subtitle */}
           <div className="mb-5">
-            <h2 className="text-2xl font-black tracking-tight text-stone-900">
+            <h2 className="text-2xl font-black tracking-tight text-stone-900 dark:text-white">
               {mode === 'login' && 'Acesse sua conta'}
               {mode === 'signup' && 'Crie sua conta no Resolve Aí'}
               {mode === 'forgot' && 'Recuperar acesso'}
             </h2>
-            <p className="text-xs text-stone-600 mt-1">
+            <p className="text-xs text-stone-600 dark:text-stone-400 mt-1">
               {mode === 'login' && 'Salve seus diagnósticos e histórico de soluções domésticas.'}
               {mode === 'signup' && 'Cadastre-se gratuitamente para gerenciar suas soluções de reparo.'}
               {mode === 'forgot' && 'Digite seu e-mail cadastrado para redefinir sua senha.'}
@@ -205,16 +197,16 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }) {
 
           {/* Error Message */}
           {error && (
-            <div className="flex items-start gap-2.5 p-3 mb-4 bg-red-100 border-2 border-red-900 text-red-900 text-xs font-semibold">
-              <AlertTriangle size={16} className="shrink-0 mt-0.5 text-red-700" />
+            <div className="flex items-start gap-2.5 p-3 mb-4 bg-red-50 dark:bg-red-950/40 border border-red-300 dark:border-red-800 text-red-900 dark:text-red-200 text-xs font-semibold rounded-xl">
+              <AlertTriangle size={16} className="shrink-0 mt-0.5 text-red-600 dark:text-red-400" />
               <div className="leading-snug">{error}</div>
             </div>
           )}
 
           {/* Success Message */}
           {successMessage && (
-            <div className="flex items-start gap-2.5 p-3 mb-4 bg-emerald-100 border-2 border-emerald-900 text-emerald-950 text-xs font-semibold">
-              <CheckCircle2 size={16} className="shrink-0 mt-0.5 text-emerald-700" />
+            <div className="flex items-start gap-2.5 p-3 mb-4 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-300 dark:border-emerald-800 text-emerald-950 dark:text-emerald-200 text-xs font-semibold rounded-xl">
+              <CheckCircle2 size={16} className="shrink-0 mt-0.5 text-emerald-600 dark:text-emerald-400" />
               <div className="leading-snug">{successMessage}</div>
             </div>
           )}
@@ -225,11 +217,11 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }) {
             {/* Field: Name (Only in Signup) */}
             {mode === 'signup' && (
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-stone-700 mb-1">
+                <label className="block text-xs font-bold uppercase tracking-wider text-stone-700 dark:text-stone-300 mb-1.5">
                   Seu Nome
                 </label>
                 <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-stone-500">
+                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-stone-400">
                     <User size={16} />
                   </div>
                   <input
@@ -238,7 +230,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }) {
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     placeholder="Ex: Carlos Silva"
-                    className="w-full pl-9 pr-3 py-2.5 text-sm bg-white border-2 border-stone-900 focus:outline-none focus:bg-amber-50 shadow-neo-sm"
+                    className="w-full pl-10 pr-3.5 py-2.5 text-sm bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 rounded-xl text-stone-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-amber-400"
                   />
                 </div>
               </div>
@@ -246,11 +238,11 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }) {
 
             {/* Field: Email */}
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-stone-700 mb-1">
+              <label className="block text-xs font-bold uppercase tracking-wider text-stone-700 dark:text-stone-300 mb-1.5">
                 E-mail
               </label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-stone-500">
+                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-stone-400">
                   <Mail size={16} />
                 </div>
                 <input
@@ -259,7 +251,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }) {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="seuemail@exemplo.com"
-                  className="w-full pl-9 pr-3 py-2.5 text-sm bg-white border-2 border-stone-900 focus:outline-none focus:bg-amber-50 shadow-neo-sm"
+                  className="w-full pl-10 pr-3.5 py-2.5 text-sm bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 rounded-xl text-stone-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-amber-400"
                 />
               </div>
             </div>
@@ -267,15 +259,15 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }) {
             {/* Field: Password (Login & Signup) */}
             {mode !== 'forgot' && (
               <div>
-                <div className="flex items-center justify-between mb-1">
-                  <label className="block text-xs font-bold uppercase tracking-wider text-stone-700">
+                <div className="flex items-center justify-between mb-1.5">
+                  <label className="block text-xs font-bold uppercase tracking-wider text-stone-700 dark:text-stone-300">
                     Senha
                   </label>
                   {mode === 'login' && (
                     <button
                       type="button"
                       onClick={() => switchMode('forgot')}
-                      className="text-xs text-stone-600 hover:text-stone-900 font-bold underline"
+                      className="text-xs text-amber-600 dark:text-amber-400 hover:underline font-bold"
                     >
                       Esqueceu a senha?
                     </button>
@@ -283,7 +275,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }) {
                 </div>
 
                 <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-stone-500">
+                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-stone-400">
                     <Lock size={16} />
                   </div>
                   <input
@@ -292,12 +284,12 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }) {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="••••••••"
-                    className="w-full pl-9 pr-10 py-2.5 text-sm bg-white border-2 border-stone-900 focus:outline-none focus:bg-amber-50 shadow-neo-sm"
+                    className="w-full pl-10 pr-10 py-2.5 text-sm bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 rounded-xl text-stone-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-amber-400"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-stone-500 hover:text-stone-900"
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-stone-400 hover:text-stone-600 dark:hover:text-stone-200"
                     title={showPassword ? 'Ocultar senha' : 'Ver senha'}
                   >
                     {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
@@ -306,31 +298,29 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }) {
 
                 {/* Password Requirements Meter for Signup */}
                 {mode === 'signup' && (
-                  <div className="mt-2.5 p-3 bg-stone-200/80 border border-stone-400 rounded-sm">
-                    <p className="text-[11px] font-bold text-stone-700 uppercase tracking-wider mb-1.5">
+                  <div className="mt-2.5 p-3 bg-stone-100 dark:bg-stone-800/80 border border-stone-200 dark:border-stone-700 rounded-xl">
+                    <p className="text-[11px] font-bold text-stone-600 dark:text-stone-400 uppercase tracking-wider mb-1.5">
                       Requisitos da Senha:
                     </p>
                     <div className="flex flex-col gap-1 text-xs">
-                      {/* Rule 1: Min 8 digits */}
                       <div className="flex items-center gap-1.5">
                         {passwordRules.hasMinLength ? (
-                          <CheckCircle2 size={14} className="text-emerald-700 shrink-0" />
+                          <CheckCircle2 size={14} className="text-emerald-500 shrink-0" />
                         ) : (
                           <Circle size={14} className="text-stone-400 shrink-0" />
                         )}
-                        <span className={passwordRules.hasMinLength ? 'text-emerald-800 font-bold' : 'text-stone-600'}>
+                        <span className={passwordRules.hasMinLength ? 'text-emerald-600 dark:text-emerald-400 font-bold' : 'text-stone-500'}>
                           Mínimo de 8 caracteres
                         </span>
                       </div>
 
-                      {/* Rule 2: At least 1 uppercase */}
                       <div className="flex items-center gap-1.5">
                         {passwordRules.hasUppercase ? (
-                          <CheckCircle2 size={14} className="text-emerald-700 shrink-0" />
+                          <CheckCircle2 size={14} className="text-emerald-500 shrink-0" />
                         ) : (
                           <Circle size={14} className="text-stone-400 shrink-0" />
                         )}
-                        <span className={passwordRules.hasUppercase ? 'text-emerald-800 font-bold' : 'text-stone-600'}>
+                        <span className={passwordRules.hasUppercase ? 'text-emerald-600 dark:text-emerald-400 font-bold' : 'text-stone-500'}>
                           Pelo menos 1 letra maiúscula (A-Z)
                         </span>
                       </div>
@@ -343,11 +333,11 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }) {
             {/* Field: Confirm Password (Only Signup) */}
             {mode === 'signup' && (
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-stone-700 mb-1">
+                <label className="block text-xs font-bold uppercase tracking-wider text-stone-700 dark:text-stone-300 mb-1.5">
                   Confirme sua Senha
                 </label>
                 <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-stone-500">
+                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-stone-400">
                     <Lock size={16} />
                   </div>
                   <input
@@ -356,11 +346,11 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }) {
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     placeholder="••••••••"
-                    className="w-full pl-9 pr-3 py-2.5 text-sm bg-white border-2 border-stone-900 focus:outline-none focus:bg-amber-50 shadow-neo-sm"
+                    className="w-full pl-10 pr-3.5 py-2.5 text-sm bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 rounded-xl text-stone-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-amber-400"
                   />
                 </div>
                 {confirmPassword && !passwordsMatch && (
-                  <p className="text-[11px] text-red-600 font-bold mt-1">
+                  <p className="text-[11px] text-red-500 font-bold mt-1">
                     As senhas digitadas não são iguais.
                   </p>
                 )}
@@ -371,7 +361,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }) {
             <button
               type="submit"
               disabled={submitting || (mode === 'signup' && !isSignupValid)}
-              className="mt-2 w-full py-3.5 px-4 bg-stone-900 hover:bg-orange-700 active:scale-[0.99] text-white font-black text-sm border-2 border-stone-900 shadow-neo neo-btn flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all min-h-[48px]"
+              className="mt-2 w-full py-3 px-4 bg-amber-400 hover:bg-amber-300 active:scale-[0.99] text-stone-950 font-black text-sm rounded-xl shadow-sm hover:shadow-md flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all min-h-[48px]"
             >
               {submitting ? (
                 <span>Processando...</span>
@@ -382,20 +372,20 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }) {
                     {mode === 'signup' && 'Cadastrar e Começar'}
                     {mode === 'forgot' && 'Enviar Link de Redefinição'}
                   </span>
-                  <ArrowRight size={15} />
+                  <ArrowRight size={16} />
                 </>
               )}
             </button>
           </form>
 
           {/* Mode Switchers */}
-          <div className="mt-5 pt-4 border-t-2 border-stone-300 text-center text-xs text-stone-600">
+          <div className="mt-5 pt-4 border-t border-stone-200 dark:border-stone-800 text-center text-xs text-stone-600 dark:text-stone-400">
             {mode === 'login' && (
               <p>
                 Ainda não tem uma conta?{' '}
                 <button
                   onClick={() => switchMode('signup')}
-                  className="text-stone-900 font-black underline hover:text-orange-700 transition-colors"
+                  className="text-amber-600 dark:text-amber-400 font-bold underline hover:text-amber-700"
                 >
                   Criar conta agora
                 </button>
@@ -407,7 +397,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }) {
                 Já possui uma conta cadastrada?{' '}
                 <button
                   onClick={() => switchMode('login')}
-                  className="text-stone-900 font-black underline hover:text-orange-700 transition-colors"
+                  className="text-amber-600 dark:text-amber-400 font-bold underline hover:text-amber-700"
                 >
                   Fazer login
                 </button>
@@ -419,7 +409,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }) {
                 Lembrou sua senha?{' '}
                 <button
                   onClick={() => switchMode('login')}
-                  className="text-stone-900 font-black underline hover:text-orange-700 transition-colors"
+                  className="text-amber-600 dark:text-amber-400 font-bold underline hover:text-amber-700"
                 >
                   Voltar para o login
                 </button>

@@ -1,10 +1,8 @@
-import { useState, useEffect } from 'react'
-import { X, Star, ShieldCheck, Truck, Sparkles, Check, Wrench, Droplet, Zap, DoorClosed, Paintbrush, AlertTriangle, Plus, Minus } from 'lucide-react'
+import { useEffect } from 'react'
+import { X, Star, ShieldCheck, Truck, Sparkles, ExternalLink, Wrench, Droplet, Zap, DoorClosed, Paintbrush, AlertTriangle } from 'lucide-react'
+import { getProductMercadoLivreUrl } from '../data/diagnosticData.js'
 
-export default function ProductDetailModal({ product, onClose, onAddToCart }) {
-  const [qty, setQty] = useState(1)
-  const [added, setAdded] = useState(false)
-
+export default function ProductDetailModal({ product, onClose }) {
   useEffect(() => {
     function handleKeyDown(e) {
       if (e.key === 'Escape') onClose()
@@ -15,70 +13,69 @@ export default function ProductDetailModal({ product, onClose, onAddToCart }) {
 
   if (!product) return null
 
-  function handleAdd() {
-    onAddToCart(product, qty)
-    setAdded(true)
-    setTimeout(() => setAdded(false), 1800)
-  }
+  const mlUrl = getProductMercadoLivreUrl(product)
 
   function getCategoryIcon(cat) {
     switch (cat) {
       case 'eletrica': return <Zap className="text-amber-500" size={32} />
       case 'hidraulica': return <Droplet className="text-blue-500" size={32} />
-      case 'portas': return <DoorClosed className="text-stone-700" size={32} />
+      case 'portas': return <DoorClosed className="text-stone-700 dark:text-stone-300" size={32} />
       case 'pintura': return <Paintbrush className="text-rose-500" size={32} />
       default: return <Wrench className="text-orange-500" size={32} />
     }
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/75 backdrop-blur-xs animate-fadeIn">
+    <div 
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-950/70 backdrop-blur-sm animate-fadeIn"
+      onClick={onClose}
+    >
       {/* Modal Container */}
       <div 
-        className="relative bg-white border-2 border-stone-900 max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-neo-lg"
+        className="relative bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl transition-colors duration-200"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Top Header Bar */}
-        <div className="sticky top-0 z-10 flex items-center justify-between border-b-2 border-stone-900 bg-stone-900 text-white px-5 py-3.5">
-          <div className="flex items-center gap-2">
-            <span className="bg-amber-400 text-stone-900 text-xs font-bold uppercase tracking-wider px-2 py-0.5 border border-stone-900">
+        <div className="sticky top-0 z-10 flex items-center justify-between border-b border-stone-200 dark:border-stone-800 bg-stone-900 dark:bg-stone-950 text-white px-5 py-4">
+          <div className="flex items-center gap-2.5">
+            <span className="bg-amber-400 text-stone-950 text-xs font-black uppercase tracking-wider px-2.5 py-0.5 rounded-md shadow-sm">
               {product.categoryLabel || 'Produto'}
             </span>
-            <span className="text-xs font-mono text-stone-300 hidden sm:inline">
+            <span className="text-xs font-mono text-stone-400 hidden sm:inline">
               REF: {product.id}
             </span>
           </div>
           <button 
             onClick={onClose}
-            className="text-stone-300 hover:text-white hover:bg-stone-800 p-1 transition-colors border border-transparent hover:border-stone-700"
+            className="text-stone-400 hover:text-white hover:bg-stone-800 p-1.5 rounded-lg transition-colors cursor-pointer"
             title="Fechar (Esc)"
           >
             <X size={20} />
           </button>
         </div>
 
-        <div className="p-6">
+        <div className="p-6 sm:p-7">
           {/* Main Info Header */}
           <div className="flex flex-col sm:flex-row gap-6 mb-6">
             {/* Visual Icon Box */}
-            <div className="sm:w-44 h-44 bg-gradient-to-br from-stone-100 to-stone-200 border-2 border-stone-900 flex flex-col items-center justify-center p-4 relative shrink-0">
+            <div className="sm:w-44 h-44 rounded-2xl bg-stone-100 dark:bg-stone-800/80 border border-stone-200 dark:border-stone-700 flex flex-col items-center justify-center p-4 relative shrink-0">
               {product.badge && (
-                <span className="absolute top-2 left-2 bg-amber-400 text-stone-900 font-bold text-[10px] tracking-wide px-1.5 py-0.5 border border-stone-900 uppercase -rotate-2">
+                <span className="absolute top-2.5 left-2.5 bg-amber-400 text-stone-950 font-black text-[10px] tracking-wide px-2 py-0.5 rounded shadow-sm uppercase">
                   {product.badge}
                 </span>
               )}
-              <div className="w-16 h-16 rounded-full bg-white border-2 border-stone-900 flex items-center justify-center mb-2 shadow-neo-sm">
+              <div className="w-16 h-16 rounded-2xl bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-700 flex items-center justify-center mb-2 shadow-sm">
                 {getCategoryIcon(product.category)}
               </div>
-              <span className="text-xs font-semibold text-stone-600 text-center">
-                Dificuldade: <span className="text-stone-900 font-bold">{product.diyDifficulty || 'Fácil'}</span>
+              <span className="text-xs font-bold text-stone-600 dark:text-stone-300 text-center">
+                Dificuldade: <span className="text-stone-900 dark:text-white font-black">{product.diyDifficulty || 'Fácil'}</span>
               </span>
             </div>
 
             {/* Title, rating, price */}
             <div className="flex-1 flex flex-col justify-between">
               <div>
-                <h3 className="text-xl sm:text-2xl font-black tracking-tight leading-tight text-stone-900 mb-2">
+                <h3 className="text-xl sm:text-2xl font-black tracking-tight leading-tight text-stone-900 dark:text-white mb-2">
                   {product.name}
                 </h3>
                 
@@ -94,33 +91,33 @@ export default function ProductDetailModal({ product, onClose, onAddToCart }) {
                       />
                     ))}
                   </div>
-                  <span className="text-xs font-bold text-stone-800">{product.stars || 4.8}</span>
-                  <span className="text-xs text-stone-500">({product.reviewsCount || 120} avaliações)</span>
+                  <span className="text-xs font-black text-stone-900 dark:text-white">{product.stars || 4.8}</span>
+                  <span className="text-xs text-stone-500 dark:text-stone-400">({product.reviewsCount || 120} avaliações)</span>
                 </div>
 
-                <p className="text-sm text-stone-600 mb-4 leading-relaxed">
+                <p className="text-sm text-stone-600 dark:text-stone-300 mb-4 leading-relaxed">
                   {product.fullDesc || product.desc}
                 </p>
               </div>
 
               {/* Price & Installments */}
-              <div className="border-t-2 border-dashed border-stone-300 pt-3">
+              <div className="border-t border-stone-200 dark:border-stone-800 pt-3">
                 <div className="flex items-baseline gap-2.5">
-                  <span className="text-3xl font-black text-stone-900">
+                  <span className="text-3xl font-black text-stone-900 dark:text-white">
                     {product.priceFormatted || `R$ ${product.price?.toFixed(2)}`}
                   </span>
                   {product.originalPrice && (
-                    <span className="text-sm text-stone-400 line-through">
+                    <span className="text-sm text-stone-400 dark:text-stone-500 line-through">
                       {product.originalPrice}
                     </span>
                   )}
                   {product.discount && (
-                    <span className="text-xs font-bold text-emerald-700 bg-emerald-100 px-1.5 py-0.5 border border-emerald-300">
+                    <span className="text-xs font-black text-emerald-800 dark:text-emerald-300 bg-emerald-100 dark:bg-emerald-950/60 px-2 py-0.5 rounded">
                       {product.discount}
                     </span>
                   )}
                 </div>
-                <div className="text-xs text-stone-500 mt-0.5">
+                <div className="text-xs text-stone-500 dark:text-stone-400 mt-1">
                   {product.installments || 'em até 3x sem juros no cartão ou à vista no Pix'}
                 </div>
               </div>
@@ -129,12 +126,12 @@ export default function ProductDetailModal({ product, onClose, onAddToCart }) {
 
           {/* Practical DIY Guide / Tips */}
           {product.diyTip && (
-            <div className="mb-5 border-2 border-stone-900 bg-amber-50 p-4">
-              <div className="flex items-center gap-2 text-stone-900 font-bold text-sm mb-1.5">
-                <Sparkles size={16} className="text-amber-600" />
+            <div className="mb-5 rounded-xl border border-amber-300 dark:border-amber-800/80 bg-amber-50/70 dark:bg-amber-950/30 p-4">
+              <div className="flex items-center gap-2 text-stone-900 dark:text-white font-black text-sm mb-1.5">
+                <Sparkles size={16} className="text-amber-600 dark:text-amber-400" />
                 <span>Como usar no seu conserto em casa:</span>
               </div>
-              <p className="text-xs sm:text-sm text-stone-700 leading-relaxed">
+              <p className="text-xs sm:text-sm text-stone-700 dark:text-stone-300 leading-relaxed">
                 {product.diyTip}
               </p>
             </div>
@@ -142,10 +139,10 @@ export default function ProductDetailModal({ product, onClose, onAddToCart }) {
 
           {/* Security Alert */}
           {product.securityTip && (
-            <div className="mb-5 border-2 border-stone-900 bg-stone-100 p-3.5 flex items-start gap-2.5">
-              <AlertTriangle size={18} className="text-orange-600 shrink-0 mt-0.5" />
-              <p className="text-xs text-stone-700 font-medium">
-                <span className="font-bold text-stone-900">Aviso de Segurança: </span>
+            <div className="mb-5 rounded-xl border border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-800/60 p-3.5 flex items-start gap-2.5">
+              <AlertTriangle size={18} className="text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+              <p className="text-xs text-stone-700 dark:text-stone-300 font-medium">
+                <span className="font-bold text-stone-900 dark:text-white">Aviso de Segurança: </span>
                 {product.securityTip}
               </p>
             </div>
@@ -154,14 +151,14 @@ export default function ProductDetailModal({ product, onClose, onAddToCart }) {
           {/* Specifications Table */}
           {product.specs && product.specs.length > 0 && (
             <div className="mb-6">
-              <h4 className="font-bold text-xs uppercase tracking-wider text-stone-500 mb-2">
+              <h4 className="font-bold text-xs uppercase tracking-wider text-stone-500 dark:text-stone-400 mb-2.5">
                 Especificações Técnicas
               </h4>
-              <div className="border-2 border-stone-900 divide-y-2 divide-stone-900 bg-white">
+              <div className="rounded-xl border border-stone-200 dark:border-stone-800 divide-y divide-stone-200 dark:divide-stone-800 bg-white dark:bg-stone-900 overflow-hidden">
                 {product.specs.map((s, idx) => (
-                  <div key={idx} className="flex text-xs py-2 px-3">
-                    <span className="font-semibold text-stone-600 w-1/3 shrink-0">{s.label}</span>
-                    <span className="text-stone-900 font-medium">{s.val}</span>
+                  <div key={idx} className="flex text-xs py-2.5 px-3.5">
+                    <span className="font-bold text-stone-500 dark:text-stone-400 w-1/3 shrink-0">{s.label}</span>
+                    <span className="text-stone-900 dark:text-stone-200 font-medium">{s.val}</span>
                   </div>
                 ))}
               </div>
@@ -169,58 +166,34 @@ export default function ProductDetailModal({ product, onClose, onAddToCart }) {
           )}
 
           {/* Shipping & Delivery perks */}
-          <div className="flex flex-wrap gap-4 text-xs text-stone-600 mb-6 bg-stone-50 p-3 border border-stone-200">
+          <div className="flex flex-wrap gap-4 text-xs text-stone-600 dark:text-stone-400 mb-6 bg-stone-50 dark:bg-stone-800/60 p-3.5 rounded-xl border border-stone-200 dark:border-stone-800">
             <div className="flex items-center gap-1.5">
-              <Truck size={15} className="text-stone-900" />
-              <span>{product.freeShipping ? 'Frete Grátis para todo Brasil' : 'Entrega rápida e rastreada'}</span>
+              <Truck size={15} className="text-amber-500" />
+              <span>{product.freeShipping ? 'Frete Grátis com envio FULL' : 'Entrega rápida e rastreada'}</span>
             </div>
             <div className="flex items-center gap-1.5">
-              <ShieldCheck size={15} className="text-stone-900" />
-              <span>Garantia de 90 dias com troca fácil</span>
+              <ShieldCheck size={15} className="text-amber-500" />
+              <span>Compra Garantida pelo Mercado Livre</span>
             </div>
           </div>
 
-          {/* Add to Cart Actions */}
-          <div className="flex items-center gap-3 pt-4 border-t-2 border-stone-900">
-            {/* Quantity control */}
-            <div className="flex items-center border-2 border-stone-900 bg-white h-11">
-              <button 
-                onClick={() => setQty((q) => Math.max(1, q - 1))}
-                className="px-3 hover:bg-stone-100 transition-colors h-full flex items-center justify-center border-r-2 border-stone-900"
-                title="Diminuir"
-              >
-                <Minus size={14} />
-              </button>
-              <span className="font-bold px-3 text-sm min-w-[36px] text-center">{qty}</span>
-              <button 
-                onClick={() => setQty((q) => q + 1)}
-                className="px-3 hover:bg-stone-100 transition-colors h-full flex items-center justify-center border-l-2 border-stone-900"
-                title="Aumentar"
-              >
-                <Plus size={14} />
-              </button>
-            </div>
-
-            {/* Add to Cart button */}
-            <button
-              onClick={handleAdd}
-              className={`flex-1 h-11 border-2 border-stone-900 font-bold text-sm flex items-center justify-center gap-2 transition-all shadow-neo neo-btn ${
-                added
-                  ? 'bg-emerald-500 text-white'
-                  : 'bg-stone-900 hover:bg-orange-700 text-white'
-              }`}
+          {/* Mercado Livre CTA Button */}
+          <div className="pt-4 border-t border-stone-200 dark:border-stone-800 flex flex-col sm:flex-row items-center gap-3">
+            <a
+              href={mlUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full flex-1 h-13 bg-[#FFE600] hover:bg-yellow-300 active:scale-95 text-stone-950 font-black text-sm sm:text-base rounded-xl flex items-center justify-center gap-2.5 shadow-md hover:shadow-lg transition-all cursor-pointer"
             >
-              {added ? (
-                <>
-                  <Check size={16} />
-                  <span>Item Adicionado ao Kit!</span>
-                </>
-              ) : (
-                <>
-                  <Wrench size={16} />
-                  <span>Adicionar ao Kit de Reparo</span>
-                </>
-              )}
+              <ExternalLink size={18} />
+              <span>Comprar no Mercado Livre</span>
+            </a>
+
+            <button
+              onClick={onClose}
+              className="w-full sm:w-auto px-5 h-13 rounded-xl border border-stone-300 dark:border-stone-700 bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 dark:hover:bg-stone-700 text-stone-800 dark:text-stone-200 font-bold text-xs sm:text-sm transition-colors cursor-pointer"
+            >
+              Fechar
             </button>
           </div>
         </div>

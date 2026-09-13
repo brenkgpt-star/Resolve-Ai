@@ -78,21 +78,21 @@ export default function FreeformInput({ onSend, onSendWithImage, disabled }) {
   }
 
   return (
-    <div className="flex flex-col border-t-2 border-stone-900 bg-white">
+    <div className="flex flex-col border-t border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900 transition-colors duration-200">
       {/* Miniatura da foto antes de enviar */}
       {selectedImage && (
-        <div className="px-4 py-2 bg-amber-50 border-b border-stone-300 flex items-center justify-between">
-          <div className="flex items-center gap-2.5">
+        <div className="px-4 py-2.5 bg-amber-50 dark:bg-stone-800/90 border-b border-stone-200 dark:border-stone-700 flex items-center justify-between">
+          <div className="flex items-center gap-3">
             <img
               src={selectedImage.dataUrl}
               alt="Preview"
-              className="w-10 h-10 object-cover border border-stone-900 rounded-sm"
+              className="w-11 h-11 object-cover border border-stone-300 dark:border-stone-600 rounded-lg shadow-sm"
             />
             <div>
-              <span className="text-xs font-bold text-stone-900 block leading-tight">
+              <span className="text-xs font-bold text-stone-900 dark:text-white block leading-tight">
                 Foto pronta para análise
               </span>
-              <span className="text-[11px] text-stone-500 font-mono">
+              <span className="text-[11px] text-stone-500 dark:text-stone-400 font-mono">
                 {selectedImage.name}
               </span>
             </div>
@@ -100,7 +100,7 @@ export default function FreeformInput({ onSend, onSendWithImage, disabled }) {
           <button
             type="button"
             onClick={clearImage}
-            className="p-1 text-stone-500 hover:text-stone-900 cursor-pointer"
+            className="p-1.5 rounded-lg text-stone-500 hover:text-stone-900 dark:text-stone-400 dark:hover:text-white hover:bg-stone-200 dark:hover:bg-stone-700 transition-colors cursor-pointer"
             title="Remover foto"
           >
             <X size={16} />
@@ -124,10 +124,10 @@ export default function FreeformInput({ onSend, onSendWithImage, disabled }) {
           type="button"
           onClick={() => fileInputRef.current?.click()}
           disabled={disabled}
-          className="flex items-center justify-center text-stone-600 hover:text-stone-900 hover:bg-stone-100 disabled:opacity-40 p-3 sm:p-3.5 border-r-2 border-stone-900 transition-colors cursor-pointer shrink-0 min-h-[56px] sm:min-h-0"
+          className="flex items-center justify-center text-stone-600 dark:text-stone-400 hover:text-amber-600 dark:hover:text-amber-400 hover:bg-stone-50 dark:hover:bg-stone-850 disabled:opacity-40 p-3 sm:p-3.5 border-r border-stone-200 dark:border-stone-800 transition-colors cursor-pointer shrink-0 min-h-[56px] sm:min-h-0"
           title="Tirar foto ou enviar imagem do problema"
         >
-          <Camera size={20} className={selectedImage ? 'text-orange-700' : 'text-stone-700'} />
+          <Camera size={20} className={selectedImage ? 'text-amber-500' : 'currentColor'} />
         </button>
 
         {/* Campo de Texto */}
@@ -143,14 +143,14 @@ export default function FreeformInput({ onSend, onSendWithImage, disabled }) {
               : "Responda a IA, tire dúvidas ou descreva o problema..."
           }
           disabled={disabled}
-          className="flex-1 px-4 py-4 sm:py-3.5 text-base sm:text-sm outline-none bg-white text-stone-900 placeholder:text-stone-400 disabled:bg-stone-50 disabled:text-stone-400 min-h-[56px] sm:min-h-0"
+          className="flex-1 px-4 py-4 sm:py-3.5 text-base sm:text-sm outline-none bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-100 placeholder:text-stone-400 dark:placeholder:text-stone-500 disabled:bg-stone-50 dark:disabled:bg-stone-950 disabled:text-stone-400 min-h-[56px] sm:min-h-0 transition-colors"
         />
 
         {/* Botão de Enviar */}
         <button
           type="submit"
           disabled={disabled || (!value.trim() && !selectedImage)}
-          className="flex items-center gap-1.5 border-l-2 border-stone-900 bg-stone-900 hover:bg-orange-700 disabled:bg-stone-300 disabled:hover:bg-stone-300 text-white disabled:text-stone-500 px-5 text-base sm:text-sm font-semibold transition-colors cursor-pointer disabled:cursor-not-allowed min-h-[56px] sm:min-h-0"
+          className="flex items-center gap-1.5 bg-amber-400 hover:bg-amber-300 disabled:bg-stone-200 dark:disabled:bg-stone-800 text-stone-950 disabled:text-stone-400 dark:disabled:text-stone-600 px-5 text-base sm:text-sm font-bold transition-all cursor-pointer disabled:cursor-not-allowed min-h-[56px] sm:min-h-0 shrink-0 shadow-sm active:scale-95"
         >
           <Send size={16} />
           <span className="hidden sm:inline">Enviar</span>
