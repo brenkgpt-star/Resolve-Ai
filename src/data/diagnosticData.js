@@ -925,10 +925,224 @@ export function matchFreeText(text) {
   return 'outro'
 }
 
-// Helper: get product category suggestion objects for a diagnosis key
-export function getProductCategoriesForDiagnosis(key) {
-  const entry = DIAGNOSIS_DATA[key] || DIAGNOSIS_DATA.outro
-  return (entry.productCategoryIds || []).map((id) => PRODUCT_SUGGESTIONS[id]).filter(Boolean)
+// ─── RANKING DE NECESSIDADE DA IA (%) POR PROBLEMA ─────────────────────────
+export const DIAGNOSTIC_RANKINGS = {
+  chuveiro: [
+    {
+      categoryId: 'resistencia-chuveiro',
+      necessityPercent: 96,
+      priorityLevel: 'critico',
+      priorityLabel: 'Causa Raiz Mais Provável (#1)',
+      role: 'Peça de Substituição Direta',
+      whyNeeded: 'Em mais de 85% dos chuveiros que param de esquentar subitamente, o filamento da resistência rompeu. É a peça com maior chance de solucionar o defeito na hora.',
+      recommendedSpec: 'Geralmente 220V 5500W (ou 127V 5400W). Confirme a voltagem no disjuntor do quadro antes de comprar.',
+      checkBeforeBuy: 'Abra a câmara e inspecione se o arame espiral está partido em duas partes ou com marcas escuras de queima.',
+    },
+    {
+      categoryId: 'chave-phillips',
+      necessityPercent: 78,
+      priorityLevel: 'alto',
+      priorityLabel: 'Ferramenta Essencial (#2)',
+      role: 'Ferramenta de Abertura e Montagem',
+      whyNeeded: 'Necessária para desparafusar os conectores elétricos e travas da carcaça plástica sem espanar a fenda.',
+      recommendedSpec: 'Tamanho PH1 ou PH2 com haste isolada.',
+      checkBeforeBuy: 'Verifique se você já possui uma chave em cruz em casa antes de adquirir uma nova.',
+    },
+    {
+      categoryId: 'chave-teste-tensao',
+      necessityPercent: 64,
+      priorityLevel: 'medio',
+      priorityLabel: 'Segurança & Diagnóstico (#3)',
+      role: 'Instrumento de Segurança',
+      whyNeeded: 'Garante que o disjuntor do chuveiro realmente cortou a energia elétrica antes de suas mãos tocarem nos fios desencapados.',
+      recommendedSpec: 'Chave de teste 100V a 500V com luz piloto LED.',
+      checkBeforeBuy: 'Indispensável para não tomar choque de 220V/127V durante a troca.',
+    },
+  ],
+  torneira: [
+    {
+      categoryId: 'kit-vedacao-torneira',
+      necessityPercent: 94,
+      priorityLevel: 'critico',
+      priorityLabel: 'Causa Raiz Mais Provável (#1)',
+      role: 'Peça de Reparo Interno',
+      whyNeeded: 'O pinga-pinga persistente é quase 100% originado pela borracha de vedação (courinho ou anel o-ring) ressecada ou deformada pelo aperto diário.',
+      recommendedSpec: 'Kit universal com courinhos de 1/2" e 3/4" e anéis de vedação.',
+      checkBeforeBuy: 'Se a torneira continua pingando mesmo apertada com força até o fim, a vedação precisa ser trocada.',
+    },
+    {
+      categoryId: 'fita-veda-rosca',
+      necessityPercent: 86,
+      priorityLevel: 'alto',
+      priorityLabel: 'Estanqueidade Obrigatória (#2)',
+      role: 'Material de Vedação Hidráulica',
+      whyNeeded: 'Imprescindível na rosca da torneira com o cano da parede para impedir infiltração oculta por dentro do azulejo.',
+      recommendedSpec: 'Fita Teflon 18mm x 25m (aplicar de 6 a 8 voltas no sentido da rosca).',
+      checkBeforeBuy: 'Nunca recoloque uma conexão hidráulica com a fita antiga descascando.',
+    },
+    {
+      categoryId: 'chave-inglesa',
+      necessityPercent: 70,
+      priorityLevel: 'medio',
+      priorityLabel: 'Ferramenta de Aplicação (#3)',
+      role: 'Ferramenta de Aperto Regulável',
+      whyNeeded: 'Permite desaparafusar o corpo metálico da torneira e a porca do reparo sem mastigar o metal cromado.',
+      recommendedSpec: 'Chave ajustável de 8 polegadas (abertura máxima até 28mm).',
+      checkBeforeBuy: 'Pode ser dispensada caso já possua chave grifo ou alicate bomba d\'água com proteção de pano.',
+    },
+  ],
+  sifao: [
+    {
+      categoryId: 'sifao-sanfonado',
+      necessityPercent: 95,
+      priorityLevel: 'critico',
+      priorityLabel: 'Causa Raiz Mais Provável (#1)',
+      role: 'Peça de Substituição Hidráulica',
+      whyNeeded: 'Sifões sanfonados acumulam gordura solidificada e sofrem microfissuras de fadiga plástica, provocando poças no armário e mau odor de esgoto.',
+      recommendedSpec: 'Sifão extensível universal com copo de limpeza integrado (DN 38/40/48/50).',
+      checkBeforeBuy: 'Passe um papel toalha seco nas curvas sanfonadas: se molhar, há trinca e necessita de substituição imediata.',
+    },
+    {
+      categoryId: 'fita-veda-rosca',
+      necessityPercent: 82,
+      priorityLevel: 'alto',
+      priorityLabel: 'Vedação Preventiva (#2)',
+      role: 'Material de Vedação',
+      whyNeeded: 'Garante que a rosca plástica do sifão vede perfeitamente na válvula metálica da pia sem goteiras posteriores.',
+      recommendedSpec: 'Fita Teflon de 18mm de largura.',
+      checkBeforeBuy: 'Tenha à disposição para vedar o encaixe com a válvula de escoamento.',
+    },
+    {
+      categoryId: 'chave-inglesa',
+      necessityPercent: 65,
+      priorityLevel: 'medio',
+      priorityLabel: 'Ferramenta de Apoio (#3)',
+      role: 'Ferramenta de Afrouxamento',
+      whyNeeded: 'Útil para soltar porcas antigas engripadas ou a arruela da válvula que estiver travada pelo tempo.',
+      recommendedSpec: 'Chave de 8" ou 10" com regulagem suave.',
+      checkBeforeBuy: 'A grande maioria dos sifões modernos aperta apenas com a força das mãos.',
+    },
+  ],
+  tomada: [
+    {
+      categoryId: 'chave-teste-tensao',
+      necessityPercent: 97,
+      priorityLevel: 'critico',
+      priorityLabel: 'Segurança & Diagnóstico Crítico (#1)',
+      role: 'Diagnóstico de Circuito',
+      whyNeeded: 'Identifica em 2 segundos se o defeito é falta de energia no fio fase (disjuntor desarmado) ou fio neutro solto, com total segurança contra choques.',
+      recommendedSpec: 'Chave de teste 100V-500V com indicador luminoso LED.',
+      checkBeforeBuy: 'Item obrigatório antes de desparafusar qualquer tomada.',
+    },
+    {
+      categoryId: 'chave-phillips',
+      necessityPercent: 85,
+      priorityLevel: 'alto',
+      priorityLabel: 'Ferramenta de Abertura (#2)',
+      role: 'Desmontagem e Fixação',
+      whyNeeded: 'Permite retirar a placa de acabamento e reapertar os bornes de latão onde os cabos elétricos ficam fixados.',
+      recommendedSpec: 'Chave isolada PH1 ou PH2 certificada.',
+      checkBeforeBuy: 'Verifique se os parafusos da sua caixinha 4x2 são padrão cruz (phillips) ou fenda reta.',
+    },
+    {
+      categoryId: 'fita-isolante',
+      necessityPercent: 74,
+      priorityLevel: 'medio',
+      priorityLabel: 'Proteção & Reforço (#3)',
+      role: 'Isolação Elétrica',
+      whyNeeded: 'Protege pontas de cobre expostas para evitar contato acidental com o fundo da caixa ou entre fase e neutro.',
+      recommendedSpec: 'Fita isolante antichamas 19mm x 20m homologada.',
+      checkBeforeBuy: 'Revise se os cabos dentro da caixinha possuem rachaduras na borracha.',
+    },
+  ],
+  porta: [
+    {
+      categoryId: 'oleo-lubrificante',
+      necessityPercent: 93,
+      priorityLevel: 'critico',
+      priorityLabel: 'Causa Raiz Mais Provável (#1)',
+      role: 'Solução Imediata de Atrito',
+      whyNeeded: 'Rangidos insuportáveis e resistência ao abrir são fruto de ressecamento e atrito seco no pino interno da dobradiça. O lubrificante resolve na primeira borrifada.',
+      recommendedSpec: 'Spray desengripante de 300ml com bico aplicador fino direcionável.',
+      checkBeforeBuy: 'Aplique direto no vão do pino da dobradiça movimentando a porta para penetrar.',
+    },
+    {
+      categoryId: 'buchas-parafusos',
+      necessityPercent: 80,
+      priorityLevel: 'alto',
+      priorityLabel: 'Alinhamento Estrutural (#2)',
+      role: 'Fixação e Nivelamento da Folha',
+      whyNeeded: 'Se a porta raspa no chão ou no batente, o parafuso da dobradiça superior quase sempre espanou na madeira ou na bucha, fazendo a folha inclinar.',
+      recommendedSpec: 'Parafusos para madeira 4,0x40mm ou buchas S6 com parafusos.',
+      checkBeforeBuy: 'Tente apertar o parafuso superior: se ele girar em falso sem fim, espanou e precisa de nova bucha/parafuso.',
+    },
+    {
+      categoryId: 'chave-phillips',
+      necessityPercent: 77,
+      priorityLevel: 'medio',
+      priorityLabel: 'Ferramenta de Aperto (#3)',
+      role: 'Ferramenta de Regulagem',
+      whyNeeded: 'Necessária para dar torque firme nas dobradiças e fixar a fechadura no alinhamento correto.',
+      recommendedSpec: 'Chave Phillips PH2 de ponta reforçada.',
+      checkBeforeBuy: 'Verifique se você já tem chave compatível com os parafusos das dobradiças.',
+    },
+  ],
+  outro: [
+    {
+      categoryId: 'maleta-ferramentas',
+      necessityPercent: 91,
+      priorityLevel: 'critico',
+      priorityLabel: 'Kit Multifunção Principal (#1)',
+      role: 'Conjunto Coringa',
+      whyNeeded: 'Mais de 90% dos imprevistos em casa são solucionados rapidamente quando você tem um kit organizado com alicate, martelo e chaves manuais básicas.',
+      recommendedSpec: 'Maleta compacta com 30 a 40 peças essenciais.',
+      checkBeforeBuy: 'Economiza em média centenas de reais em visitas de marido de aluguel no primeiro ano.',
+    },
+    {
+      categoryId: 'fita-isolante',
+      necessityPercent: 76,
+      priorityLevel: 'alto',
+      priorityLabel: 'Reparos Rápidos (#2)',
+      role: 'Material de Contenção e Fixação',
+      whyNeeded: 'Item versátil para pequenos isolamentos, reparos elétricos ou contenção temporária de emergências.',
+      recommendedSpec: 'Fita isolante 20m antichamas.',
+      checkBeforeBuy: 'Item fundamental para ter na gaveta de emergência da casa.',
+    },
+    {
+      categoryId: 'buchas-parafusos',
+      necessityPercent: 68,
+      priorityLevel: 'medio',
+      priorityLabel: 'Fixações em Geral (#3)',
+      role: 'Fixação Universal',
+      whyNeeded: 'Permite prender espelhos, quadros, suportes e trilhos em paredes de alvenaria com segurança.',
+      recommendedSpec: 'Kit sortido com buchas de 6mm e 8mm.',
+      checkBeforeBuy: 'Ideal para ter sempre disponível em caixinha organizadora.',
+    },
+  ],
+}
+
+// Helper: get product category suggestion objects with AI % necessity ranking
+export function getProductCategoriesForDiagnosis(key, dynamicRankings = null) {
+  const rankings = dynamicRankings || DIAGNOSTIC_RANKINGS[key] || DIAGNOSTIC_RANKINGS.outro
+
+  const result = rankings.map((ranking, index) => {
+    const base = PRODUCT_SUGGESTIONS[ranking.categoryId]
+    if (!base) return null
+    return {
+      ...base,
+      rank: index + 1,
+      necessityPercent: ranking.necessityPercent,
+      priorityLevel: ranking.priorityLevel,
+      priorityLabel: ranking.priorityLabel,
+      role: ranking.role,
+      whyNeeded: ranking.whyNeeded,
+      recommendedSpec: ranking.recommendedSpec,
+      checkBeforeBuy: ranking.checkBeforeBuy,
+    }
+  }).filter(Boolean)
+
+  // Ordena rigorosamente pelo percentual de necessidade (%) do maior para o menor
+  return result.sort((a, b) => (b.necessityPercent || 0) - (a.necessityPercent || 0))
 }
 
 // ─── PRODUCT SUGGESTIONS (post-diagnosis category → variants) ────────────────
@@ -936,7 +1150,7 @@ export const PRODUCT_SUGGESTIONS = {
   'resistencia-chuveiro': {
     id: 'resistencia-chuveiro',
     name: 'Resistência de Chuveiro',
-    description: 'A peça que esquenta a água — a mais trocada do Brasil',
+    description: 'A peça que esquenta a água — responsável por mais de 85% das falhas em chuveiros',
     emoji: '⚡',
     colorClass: 'bg-amber-50 border-amber-300',
     iconBg: 'bg-amber-100',
@@ -944,25 +1158,31 @@ export const PRODUCT_SUGGESTIONS = {
       {
         id: 'rv-127-5400',
         size: '127V · 5400W',
-        spec: 'Padrão residencial tensão baixa',
+        spec: 'Padrão residencial tensão 110V/127V',
         priceRange: 'R$ 25 – R$ 45',
-        tip: 'Confirme a voltagem no disjuntor do chuveiro ou na embalagem do aparelho',
+        tip: 'Confirme a voltagem no disjuntor do chuveiro ou na carcaça do aparelho antes de comprar',
+        marketBadge: 'Rede 110V/127V',
+        compatibilityRate: '25% dos lares',
         mercadoLivreUrl: 'https://lista.mercadolivre.com.br/resistencia-chuveiro-127v-5400w',
       },
       {
         id: 'rv-220-5500',
         size: '220V · 5500W',
-        spec: 'Padrão residencial tensão alta',
+        spec: 'Padrão residencial tensão 220V (Mais comum)',
         priceRange: 'R$ 25 – R$ 45',
-        tip: 'O modelo mais vendido no Brasil — serve na maioria das cidades',
+        tip: 'O modelo mais utilizado no Brasil — compatível com a grande maioria dos chuveiros comuns',
+        marketBadge: 'Mais Comum no Brasil (70% dos Lares)',
+        compatibilityRate: '70% dos lares',
         mercadoLivreUrl: 'https://lista.mercadolivre.com.br/resistencia-chuveiro-220v-5500w',
       },
       {
         id: 'rv-220-7500',
         size: '220V · 7500W',
-        spec: 'Alta potência — turbo / pressurizados',
+        spec: 'Alta potência — modelos turbo / pressurizados',
         priceRange: 'R$ 35 – R$ 65',
-        tip: 'Para chuveiros turbo ou com pressurizador embutido — verifique a etiqueta no aparelho',
+        tip: 'Para chuveiros pressurizados, eletrônicos ou turbo — verifique a potência exata na carcaça',
+        marketBadge: 'Chuveiros Turbo / Blindados',
+        compatibilityRate: '5% dos lares',
         mercadoLivreUrl: 'https://lista.mercadolivre.com.br/resistencia-chuveiro-220v-7500w',
       },
     ],

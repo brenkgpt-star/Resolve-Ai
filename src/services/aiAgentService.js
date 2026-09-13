@@ -178,12 +178,12 @@ Regras fundamentais:
   }
 
   async _buildConclusion(aiResponse, visualFinding) {
-    const categories = getProductCategoriesForDiagnosis(this.key)
+    let categories = getProductCategoriesForDiagnosis(this.key)
 
     // Extrai o texto após "DIAGNOSTICO CONCLUIDO:"
     const rawDiagnosis = aiResponse.replace('DIAGNOSTICO CONCLUIDO:', '').trim()
 
-    // Opcional: polir o texto final de conclusão
+    // 1. Polimento do texto de diagnóstico
     let diagnosisText = rawDiagnosis
     try {
       const polished = await groqRequest(
@@ -201,6 +201,65 @@ Regras fundamentais:
       // mantém rawDiagnosis se falhar
     }
 
+    // 2. Calibração dinâmica do ranking de necessidade (%) pela IA com base nas mensagens reais do usuário
+    try {
+      const rankingPrompt = `Você é o engenheiro especialista do Resolve Aí.
+Com base no diagnóstico do problema: "${this.data.label}"
+Relato recente: "${rawDiagnosis}"
+${visualFinding ? `Inspeção visual da foto: "${visualFinding}"` : ''}
+
+Abaixo estão os produtos candidatos para este reparo:
+${categories.map((c) => `- id: "${c.id}", nome: "${c.name}"`).join('\n')}
+
+Avalie a urgência e necessidade de cada item no momento atual para este caso específico.
+Retorne APENAS um array JSON válido sem markdown adicional:
+[
+  {
+    "id": "string com o id do produto",
+    "necessityPercent": numero inteiro entre 60 e 98 (o item mais crítico/causa raiz deve ter a maior porcentagem, ex: 95-98),
+    "whyNeeded": "1 frase curta e direta explicando exatamente por que este item é o mais ou menos necessário agora no caso deste usuário",
+    "priorityLabel": "termo curto: Causa Raiz Mais Provável (#1), Ferramenta Crítica (#2), ou Suporte & Segurança (#3)"
+  }
+]`
+
+      const dynamicRankingRaw = await groqRequest(
+        [
+          {
+            role: 'system',
+            content: 'Você é um assistente técnico residencial. Responda exclusivamente com array JSON válido, sem texto introdutório ou markdown adicional.',
+          },
+          { role: 'user', content: rankingPrompt },
+        ],
+        { temperature: 0.2, max_tokens: 400 }
+      )
+
+      const cleanJson = dynamicRankingRaw.replace(/```json/g, '').replace(/```/g, '').trim()
+      const parsed = JSON.parse(cleanJson)
+
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        // Ordena pela maior porcentagem de necessidade
+        parsed.sort((a, b) => (b.necessityPercent || 0) - (a.necessityPercent || 0))
+
+        const updatedCategories = parsed.map((item, idx) => {
+          const original = categories.find((c) => c.id === item.id)
+          if (!original) return null
+          return {
+            ...original,
+            rank: idx + 1,
+            necessityPercent: item.necessityPercent || original.necessityPercent,
+            priorityLabel: item.priorityLabel || original.priorityLabel,
+            whyNeeded: item.whyNeeded || original.whyNeeded,
+          }
+        }).filter(Boolean)
+
+        if (updatedCategories.length > 0) {
+          categories = updatedCategories
+        }
+      }
+    } catch (e) {
+      console.warn('Usando ranking pré-calibrado padrão:', e.message)
+    }
+
     const intro = this.hasImage
       ? 'Analisando a foto enviada junto com o que você me descreveu, identifiquei a causa raiz:'
       : 'Com base em tudo que você me descreveu, a causa raiz ficou bem clara:'
@@ -210,7 +269,7 @@ Regras fundamentais:
       key: this.key,
       categories,
       visualFinding,
-      text: `${intro} 🎯\n\n${diagnosisText}\n\n💡 Separei abaixo as ferramentas e peças sob medida para você resolver sem precisar pagar visita técnica. Clique em cada item para ver opções no Mercado Livre!`,
+      text: `${intro} 🎯\n\n${diagnosisText}\n\n📊 Montei abaixo um **Ranking de Necessidade (%)** para você ver exatamente qual peça ou ferramenta é a mais urgente no momento para resolver sem gastar com visita técnica!`,
     }
   }
 }
